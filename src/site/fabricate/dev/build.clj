@@ -85,7 +85,7 @@
                     (fs/file
                      font-dir
                      "CommitMono-stdV142-design/CommitMono VariableFont.woff2")
-                    :file "docs/fonts/CommitMono VariableFont.woff2"}]
+                    :file "html/fonts/CommitMono VariableFont.woff2"}]
                   (fs/glob (fs/path font-dir "Lapidar0.3") "*.woff2"))]
     (doseq [{:keys [src file]} fonts]
       (when-not (fs/exists? file) (fs/copy src file)))
@@ -93,12 +93,12 @@
 
 (def options
   "Options for building Fabricate's own documentation."
-  (let [d "docs"]
+  (let [d "html"]
     {:site.fabricate.page/publish-dir d
      :site.fabricate.dev.build/server {:port 7779 :dir d}}))
 
 
-(defmethod api/collect "pages/**.fab"
+(defmethod api/collect "docs/**.fab"
   [src options]
   (mapv (fn path->entry [p]
           {:site.fabricate.source/format   :site.fabricate.read/v0
@@ -192,10 +192,6 @@
   ([dir p] (apply fs/path (drop 1 (fs/components (fs/relativize dir p)))))
   ([p] (subpath (fs/cwd) p)))
 
-(comment
-  (fs/parent "docs/README.md")
-  (subpath "docs/path/to/some/file"))
-
 (defn output-path
   [input-file output-location]
   (cond (fs/directory? output-location) (fs/file (fs/path output-location
@@ -253,7 +249,7 @@
            (api/assemble [])
            (api/construct! []))
       :done)
-  (run! fs/delete (fs/glob "docs" "**.html"))
+  (run! fs/delete (fs/glob "html" "**.html"))
   (.getMethodTable api/produce!))
 
 
