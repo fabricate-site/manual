@@ -104,7 +104,7 @@
           {:site.fabricate.source/format   :site.fabricate.read/v0
            :site.fabricate.document/format :hiccup
            :site.fabricate.source/location (fs/file p)
-           :site.fabricate.entry/source    src
+           :site.fabricate.api/source      src
            :site.fabricate.source/created  (time/file-created p)
            :site.fabricate.source/modified (time/file-modified p)
            ;; multi-outputs are superfluous; this should be replaced with a
@@ -123,7 +123,7 @@
 (defmethod api/collect "README.md.fab"
   [src options]
   [{:site.fabricate.source/location (fs/file src)
-    :site.fabricate.entry/source    src
+    :site.fabricate.api/source      src
     :site.fabricate.source/created  (time/file-created src)
     :site.fabricate.source/modified (time/file-modified src)
     :site.fabricate.page/title      "Fabricate: README"
