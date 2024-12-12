@@ -1,5 +1,6 @@
 (ns site.fabricate.dev.references-test
   (:require [site.fabricate.dev.references :as refs]
+            [site.fabricate.api]
             [clojure.test :as t]))
 
 (t/deftest specification
