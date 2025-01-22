@@ -1,0 +1,72 @@
+/* type, grid, and spacing scales from utopia.fyi */
+
+/* type scale */
+/* @link https://utopia.fyi/type/calculator?c=320,18,1.25,1600,24,1.333,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+:root {
+  /* Step -2: 11.52px → 13.5068px */
+  --step--2: clamp(0.72rem, 0.689rem + 0.1552vw, 0.8442rem);
+  /* Step -1: 14.4px → 18.0045px */
+  --step--1: clamp(0.9rem, 0.8437rem + 0.2816vw, 1.1253rem);
+  /* Step 0: 18px → 24px */
+  --step-0: clamp(1.125rem, 1.0313rem + 0.4688vw, 1.5rem);
+  /* Step 1: 22.5px → 31.992px */
+  --step-1: clamp(1.4063rem, 1.2579rem + 0.7416vw, 1.9995rem);
+  /* Step 2: 28.125px → 42.6453px */
+  --step-2: clamp(1.7578rem, 1.5309rem + 1.1344vw, 2.6653rem);
+  /* Step 3: 35.1563px → 56.8462px */
+  --step-3: clamp(2.1973rem, 1.8584rem + 1.6945vw, 3.5529rem);
+  /* Step 4: 43.9453px → 75.776px */
+  --step-4: clamp(2.7466rem, 2.2492rem + 2.4868vw, 4.736rem);
+  /* Step 5: 54.9316px → 101.0094px */
+  --step-5: clamp(3.4332rem, 2.7133rem + 3.5998vw, 6.3131rem);
+}
+
+/* space scale */
+/* @link https://utopia.fyi/space/calculator?c=320,18,1.25,1600,24,1.333,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|5|7.2,s-l|l-3xl|xl-4xl&g=s,l,xl,12 */
+
+  --space-3xs: clamp(0.3125rem, 0.2969rem + 0.0781vw, 0.375rem);
+  --space-2xs: clamp(0.5625rem, 0.5156rem + 0.2344vw, 0.75rem);
+  --space-xs: clamp(0.875rem, 0.8125rem + 0.3125vw, 1.125rem);
+  --space-s: clamp(1.125rem, 1.0313rem + 0.4688vw, 1.5rem);
+  --space-m: clamp(1.6875rem, 1.5469rem + 0.7031vw, 2.25rem);
+  --space-l: clamp(2.25rem, 2.0625rem + 0.9375vw, 3rem);
+  --space-xl: clamp(3.375rem, 3.0938rem + 1.4063vw, 4.5rem);
+  --space-2xl: clamp(4.5rem, 4.125rem + 1.875vw, 6rem);
+  --space-3xl: clamp(5.625rem, 5.1563rem + 2.3438vw, 7.5rem);
+  --space-4xl: clamp(8.125rem, 7.4531rem + 3.3594vw, 10.8125rem);
+
+  /* One-up pairs */
+  --space-3xs-2xs: clamp(0.3125rem, 0.2031rem + 0.5469vw, 0.75rem);
+  --space-2xs-xs: clamp(0.5625rem, 0.4219rem + 0.7031vw, 1.125rem);
+  --space-xs-s: clamp(0.875rem, 0.7188rem + 0.7813vw, 1.5rem);
+  --space-s-m: clamp(1.125rem, 0.8438rem + 1.4063vw, 2.25rem);
+  --space-m-l: clamp(1.6875rem, 1.3594rem + 1.6406vw, 3rem);
+  --space-l-xl: clamp(2.25rem, 1.6875rem + 2.8125vw, 4.5rem);
+  --space-xl-2xl: clamp(3.375rem, 2.7188rem + 3.2813vw, 6rem);
+  --space-2xl-3xl: clamp(4.5rem, 3.75rem + 3.75vw, 7.5rem);
+  --space-3xl-4xl: clamp(5.625rem, 4.3281rem + 6.4844vw, 10.8125rem);
+
+  /* Custom pairs */
+  --space-s-l: clamp(1.125rem, 0.6563rem + 2.3438vw, 3rem);
+  --space-l-3xl: clamp(2.25rem, 0.9375rem + 6.5625vw, 7.5rem);
+  --space-xl-4xl: clamp(3.375rem, 1.5156rem + 9.2969vw, 10.8125rem);
+}
+
+/* @link https://utopia.fyi/grid/calculator?c=320,18,1.25,1600,24,1.333,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|5|7.2,s-l|l-3xl&g=3xs,s,4xl,8 */
+
+  --grid-max-width: 100.00rem;
+  --grid-gutter: var(--space-3xs-s, clamp(0.3125rem, 0.0156rem + 1.4844vw, 1.5rem));
+  --grid-columns: 8;
+}
+
+.u-container {
+  max-width: var(--grid-max-width);
+  padding-inline: var(--grid-gutter);
+  margin-inline: auto;
+}
+
+.u-grid {
+  display: grid;
+  gap: var(--grid-gutter);
+}
