@@ -32,7 +32,7 @@
            juxt/dirwatch {:mvn/version "0.2.5"}
            site.fabricate/fabricate
            {:git/url "https://github.com/fabricate-site/fabricate"
-            :sha     "5f26c05fc879a227afb2f0d7d70929b10a222393"}
+            :sha     "ce5aa3dc359eea20c78d1f9562332a009ee9ea6c"}
            zprint/zprint {:mvn/version "1.2.9"}}
  #_{babashka/fs             {:mvn/version "0.2.12"}
     hiccup/hiccup           {:mvn/version "2.0.0-RC2"}

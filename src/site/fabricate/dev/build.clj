@@ -8,6 +8,7 @@
             [site.fabricate.prototype.read.grammar :as grammar]
             [site.fabricate.prototype.hiccup :as hiccup]
             [site.fabricate.prototype.html :as html]
+            [site.fabricate.prototype.source.clojure :as clj]
             [garden.core :as garden]
             [garden.stylesheet :refer [at-import]]
             [rewrite-clj.zip :as z]
@@ -17,8 +18,7 @@
             [hiccup.core]
             [dev.onionpancakes.chassis.core :as c]
             [clojure.string :as str]
-            [clojure.java.io :as io]
-            [http.server :as server]))
+            [clojure.java.io :as io]))
 
 
 
@@ -93,9 +93,7 @@
 
 (def options
   "Options for building Fabricate's own documentation."
-  (let [d "html"]
-    {:site.fabricate.page/publish-dir d
-     :site.fabricate.dev.build/server {:port 7779 :dir d}}))
+  (let [d "html"] {:site.fabricate.page/publish-dir d}))
 
 
 (defmethod api/collect "docs/**.fab"
@@ -222,28 +220,13 @@
     (spit output-file (:site.fabricate.document/data entry))
     (assoc entry :site.fabricate.page/output output-file)))
 
-(defonce file-server (atom nil))
-
-(defn launch-server!
-  [{:keys [site.fabricate.api/options] :as site}]
-  (when (nil? @file-server)
-    (reset! file-server (server/start (get options ::server))))
-  site)
-
-
-(defn shutdown-server!
-  [& _args]
-  (when-not (nil? @file-server) (swap! file-server #(do (server/stop %) nil))))
-
-
-(def setup-tasks [create-publish-dirs! get-css! copy-fonts! launch-server!])
+(def setup-tasks [create-publish-dirs! get-css! copy-fonts!])
 
 (comment
   ;; it's hard to beat this simplicity. also, a point in favor of the
   ;; "return a modified site with modified options" implementation:
   ;; potentially storing a reference to a server or other stateful
   ;; component
-  @file-server
   (do (->> {:site.fabricate.api/options options}
            (api/plan! setup-tasks)
            (api/assemble [])
