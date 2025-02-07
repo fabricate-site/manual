@@ -114,6 +114,23 @@
                                                options))}]})
         (fs/glob (System/getProperty "user.dir") src)))
 
+(defmethod api/collect "docs/**.clj"
+  [src {:keys [site.fabricate.page/publish-dir] :as opts}]
+  (mapv (fn path->entry [p]
+          {:site.fabricate.source/format   :clojure/v0
+           :site.fabricate.document/format :hiccup
+           :site.fabricate.source/location (fs/file (fs/cwd) p)
+           :site.fabricate.page/outputs    [{:site.fabricate.page/format :html
+                                             :site.fabricate.page/location
+                                             (fs/file publish-dir)}]
+           :site.fabricate.api/source      src
+           :site.fabricate.source/created  (time/file-created p)
+           :site.fabricate.source/modified (time/file-modified p)})
+        (fs/glob "." src)))
+
+(comment
+  (api/collect "docs/**.clj" {:site.fabricate.page/publish-dir "html"}))
+
 
 ;; example of single-file handling; conflict resolution can be handled
 ;; separately if there's overlap.
@@ -174,6 +191,57 @@
           :site.fabricate.document/data
           (slurp (:site.fabricate.source/location entry)))))
 
+(defn entry->html
+  [entry]
+  (let [main (-> (:site.fabricate.source/location entry)
+                 (clj/file->forms)
+                 (clj/eval-forms)
+                 (clj/forms->hiccup))
+        updated-entry (merge entry)]
+    (assoc entry
+           :site.fabricate.document/data
+           [:html
+            [:head [:title (:site.fabricate.document/title updated-entry)]]
+            [:body main [:footer]]])))
+
+(defmethod api/build [:clojure/v0 :hiccup]
+  [{source-location :site.fabricate.source/location :as entry} opts]
+  (println "generating hiccup from" (str source-location))
+  (let [main    (-> source-location
+                    (clj/file->forms)
+                    (clj/eval-forms)
+                    (clj/forms->hiccup))
+        ns-meta (-> main
+                    (get-in [1 :data-clojure-namespace])
+                    (find-ns)
+                    meta)]
+    (-> entry
+        (assoc :site.fabricate.document/data
+               [:html
+                [:head [:link {:rel :stylesheet :href "/css/normalize.css"}]
+                 [:link {:rel :stylesheet :href "/css/remedy.css"}]
+                 [:link {:rel :stylesheet :href "/css/utopia.css"}]]
+                [:body main [:footer]]])
+        (merge ns-meta))))
+
+(comment
+  (api/construct! []
+                  {:site.fabricate.api/entries
+                   [(api/build {:site.fabricate.source/location
+                                (fs/file (fs/cwd) "docs/design/utopia.clj")
+                                :site.fabricate.source/format :clojure/v0
+                                :site.fabricate.page/location "html"
+                                :site.fabricate.document/format :hiccup
+                                :site.fabricate.page/format :html}
+                               {})]})
+  (let [evaluated (-> "docs/design/utopia.clj"
+                      clj/file->forms
+                      clj/eval-forms
+                      clj/forms->hiccup)]
+    (-> evaluated
+        (find-ns)
+        meta)))
+
 ;; (def assemble-index nil)
 
 ;; (defmethod assemble "index.html" [entry] (assemble-index entry))
@@ -196,6 +264,10 @@
                                                           (subpath input-file)))
         (instance? java.io.File output-location) output-location))
 
+(comment
+  (output-path (fs/path (fs/cwd) "docs/design/utopia.clj") "html")
+  (output-path "docs/design/utopia.clj" "html"))
+
 (defn hiccup->html
   [entry _opts]
   (let [output-file (fs/file (str (output-path
@@ -204,6 +276,7 @@
                                      (:site.fabricate.source/location entry)))
                                    (:site.fabricate.page/location entry))
                                   ".html"))]
+    (println "writing output to" (str output-file))
     (write-hiccup-html! (:site.fabricate.document/data entry) output-file)
     (assert (fs/exists? output-file))
     (-> entry
@@ -233,11 +306,10 @@
            (api/construct! []))
       :done)
   (run! fs/delete (fs/glob "html" "**.html"))
-  (.getMethodTable api/produce!))
-
-
-(comment
+  (.getMethodTable api/produce!)
+  (.getMethodTable api/collect)
   (names)
+  (list-methods)
   (str/split (str (symbol :site.fabricate.document/data)) #"\.")
   (name :abc/xyz)
   clojure.string/split
