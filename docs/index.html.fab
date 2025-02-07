@@ -73,7 +73,7 @@ Fabricate also gives you an API that can generate a website using 3 core functio
                      :color "var(--color-darkbrown) !important"}}
        (expr->hiccup '(-> {} api/plan! api/assemble api/construct!))
        ]) 🔚
-This API, while straightforward enough to quickly get started with, does not constrain what you can do with Fabricate. You can extend Fabricate to new markup formats or other methods of generating pages.
+This API, while straightforward enough to quickly get started with, does not constrain what you can do with Fabricate. You can extend Fabricate to new markup formats or other methods of generating pages. If you use Clerk for some things and markdown for others, Fabricate can flexibly accommodate all of them with a unified API.
 
 ✳= [:div {:style {:margin-top "1.5em"}} [:figure 
    {:style {:grid-column "1 / 4"

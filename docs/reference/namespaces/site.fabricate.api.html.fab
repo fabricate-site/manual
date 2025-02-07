@@ -223,7 +223,7 @@ The API provides an elegant combination of extensibility and ease of use. This e
 [dev.onionpancakes.chassis.core :as c]
             ))]] 🔚
 
-✳ (def build-ns-zip (z/of-node (parser/parse-file-all "dev/site/fabricate/dev/build.clj"))) 🔚
+✳ (def build-ns-zip (z/of-node (parser/parse-file-all "src/site/fabricate/dev/build.clj"))) 🔚
 ✳= [:h3 {:style {:font-size "var(--font-medium)"}} "Setting up with " [:code {:class "language-clojure symbol"} "defmethod"]] 🔚
 
 Before running the API's 3 main functions, the build process defines methods for each of these multimethods.

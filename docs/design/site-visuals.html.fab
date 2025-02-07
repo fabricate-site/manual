@@ -90,7 +90,7 @@ See ✳=[:a {:href "https://respatialized.net/typesetting-sexprs.html"} "Typeset
                                })}
   [:code {:class "language-cloure"}]
   (utils/str->hiccup
-   (slurp "dev/site/fabricate/dev/build.clj"))] 🔚
+   (slurp "src/site/fabricate/dev/build.clj"))] 🔚
 
 
 ✳(throw (ex-info "dummy exception" {}))🔚
