@@ -79,6 +79,30 @@
   --grid-max-width: 100.00rem;
   --grid-gutter: var(--space-3xs-s, clamp(0.3125rem, 0.0156rem + 1.4844vw, 1.5rem));
   --grid-columns: 8;
+
+  /* colors */
+
+    --color-white: #fcfbe7;
+    --color-lightgray: #f2efe4;
+    --color-clay: #c8beb7;
+    --color-sand: #F0EEEA;
+    --color-brown: #926844;
+    --color-darkbrown: #34281D;
+    --color-lightgreen: #afc38d;
+    --color-green:  #3F6226;
+    --color-gray:  #656565;
+    --color-blue: #3C506F;
+    --color-yellow: #AFA840;
+    --color-darkgreen: #505D3B;
+    --color-orange: #f96500;
+    --color-burntorange: #632300;
+
+    /* fonts */
+    --font-display: 'Lapidar 03', sans-serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'segoe ui', 'helvetica neue', helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    --font-mono: Commit Mono, CommitMonoV142, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+
+
 }
 
 .u-container {
@@ -97,28 +121,86 @@
 /* 2xs gutter + 4 columns @ 320px viewport =
   min col size of 70px */
 
-.u-grid-main {
-    display: grid;
-    gap: var(--grid-gutter);
-    /* grid-template-columns: repeat(4, minmax(70px, var(--space-3xl))) repeat(auto-fit, minmax(70px, var(--space-3xl))); */
-    grid-template-columns:  repeat(auto-fit, minmax(70px, var(--space-3xl)));
+
+.u-grid-flex {
+    /* https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
     max-width: 1584px;
+    display: grid;
+    --grid-item-min-width: var(--space-2xl);
+    --max-column-count: 8;
+    --gap-count: calc(var(--max-column-count) - 1);
+    --total-gap-width: calc(var(--gap-count) * var(--grid-gutter));
+    --grid-item-max-width: calc((100% - var(--total-gap-width)) / var(--max-column-count));
+    --grid-column-width: max(var(--grid-item-min-width), var(--grid-item-max-width));
+
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-column-width), 1fr));
+    grid-gap: var(--grid-gutter);
+
 }
 
 /* default of lobotomized owl */
-.u-grid-main > * + * {
+.u-grid-flex > * + * {
     grid-column: span 4;
 }
 
-.u-grid-main > :where(h1,h2,h3,h4,h5,h6) {
+.u-grid-flex > :where(h1,h2,h3,h4,h5,h6) {
     grid-column: 1 / span 4;
 }
 
 /* anything after a header starts a new row */
-.u-grid-main > :where(h1,h2,h3,h4,h5,h6) + * {
+.u-grid-flex > :where(h1,h2,h3,h4,h5,h6) + * {
     grid-column: 1 / span 4;
 }
 
 
-/* see also: an alternative to auto-fit:
-https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
+/* defaults go in html/main  */
+
+
+html {
+    background-color: var(--color-sand);
+}
+
+main {
+    font-family: var(--font-sans);
+    font-size: var(--step-1);
+    margin-left: var(--space-s);
+    margin-right: var(--space-s);
+}
+
+:where(pre, code, samp) {
+    font-family: var(--font-mono);
+}
+
+:where(pre, samp) {
+    font-size: var(--step--1);
+    line-height: 1.35;
+}
+
+:where(h1,h2,h3,h4,h5,h6) {
+    font-family: var(--font-display);
+    font-weight: 900;
+}
+
+h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2xs);
+    margin-bottom: var(--space-m);
+}
+
+h2 {
+    font-size: var(--step-4);
+    margin-top: var(--space-3xs);
+    margin-bottom: var(--space-s);
+}
+
+h3 {
+    font-size: var(--step-3);
+}
+
+h4 {
+    font-size: var(--step-2);
+}
+
+:where(p, li) code {
+    font-size: calc(var(--step-1) * 0.9);
+}
