@@ -78,6 +78,8 @@ main {
 :where(h1,h2,h3,h4,h5,h6) {
     font-family: var(--font-display);
     font-weight: 900;
+    margin-top: var(--space-2xs);
+    margin-bottom: var(--space-s);
 }
 
 h1 {
@@ -275,7 +277,7 @@ footer {
     justify-content: space-between;
     align-items: baseline;
     grid-column: 1 / -1;
-    border-radius: var(--border-offset);
+    border-radius: var(--space-xs);
 }
 .multimethod-card .multimethod-identifiers {
     background: var(--color-green);
@@ -286,11 +288,15 @@ footer {
     justify-content: space-between;
     align-items: baseline;
     grid-column: 1 / -1;
-    border-radius: var(--border-offset);
+    border-radius: var(--space-s);
 
 }
 
 .fn-card .fn-identifiers>h2 {
+    margin-bottom: 0em;
+}
+
+.multimethod-card .multimethod-identifiers>h2 {
     margin-bottom: 0em;
 }
 
@@ -353,11 +359,14 @@ footer {
 
 .multimethod-example {
     grid-column: span 4;
+    display: grid;
+    grid-template-columns: subgrid;
 }
 
 .multimethod-example pre {
     /* background-color: var(--color-clay); */
     border-radius: var(--space-2xs);
+    grid-column: span 4;
     font-size: var(--step--2);
     margin: 0;
 }
@@ -372,8 +381,6 @@ footer {
     /* display: inline; */
 
 }
-
-
 
 .fn-data dt {
     grid-column: 1 / span 1;
@@ -394,10 +401,30 @@ footer {
     /* padding: var(--space-3xs); */
 }
 
-.function-data dd code {
-    font-size: calc(var(--step--1) * 0.9);
+.api-toc {
+    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--step-3);
+    align-self: center;
 }
-
+ol.api-toc {
+    display: grid;
+    grid-template-columns: var(--space-m) repeat(2, minmax(var(--space-2xl), calc(var(--space-4xl) * 2)));
+    grid-gap: var(--grid-gutter);
+    margin-top: var(--space-2xs);
+    margin-bottom: var(--space-l);
+    padding-left: 0;
+}
+.api-toc li {
+    display: inline-grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: baseline;
+}
+.api-toc li * {
+    grid-column: span 1;
+}
 
 .u-grid-flex .clojure-comment {
     grid-column: 1 / -1;
@@ -407,6 +434,17 @@ footer {
 .u-grid-flex .clojure-form {
     font-size: var(--step--1);
     grid-column: span 4;
+}
+
+.card-sm {
+    padding: var(--space-2xs);
+    background-color: var(--color-darkbrown);
+    color: var(--color-sand);
+    border-radius: var(--space-3xs);
+    /* margin-bottom: var(--space-3xs) */
+}
+.card-sm:hover {
+    text-decoration: underline;
 }
 
 .card {
@@ -575,12 +613,12 @@ a.decor-internal:hover {
 }
 
 footer.main-footer {
-    margin-left: 12.5vw;
-    margin-right: 12.5vw;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    border-top: var(--space-2xs) solid var(--color-darkbrown);
+    margin-left: var(--grid-gutter);
+    margin-right: var(--grid-gutter);
+    margin-top: var(--space-l);
+    margin-bottom: var(--space-l);
+    padding-top: var(--grid-gutter);
     display: flex;
     flex-flow: row wrap;
     align-items: center;
@@ -593,13 +631,11 @@ footer.main-footer {
 .main-footer div {
     text-align: center;
     /* flex: 1 12ch; */
-    flex-basis: 8ch;
-    padding-top: 0.25em;
-    padding-bottom: 0.25em;
-    padding-left: 0.5ch;
-    padding-right: 0.5ch;
+    flex-basis: var(--space-4xl);
+    padding: var(--space-3xs);
     margin-bottom: 0.25em;
-    margin-right: 0.25em;
+    margin-right: var(--grid-gutter);
+    border-radius: var(--space-3xs);
 }
 
 footer a {

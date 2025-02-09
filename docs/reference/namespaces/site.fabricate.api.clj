@@ -16,25 +16,57 @@
 ^{:kindly/kind :kind/hiccup}
 [:div
  {:id    "top"
-  :style {:border        "var(--space-2xs) solid var(--color-blue)"
-          :border-radius "var(--space-xs)"
-          :display       :grid
+  :style {:display       :grid
           :grid-column   "1 / -1"
-          :grid-template-columns :subgrid}}
+          :grid-template-columns :subgrid
+          :margin-bottom "var(--space-l)"}}
  [:h1
-  {:style {:background     "var(--color-blue)"
-           :color          "var(--color-sand)"
-           :grid-column    "1 / -1"
-           :line-height    1.0
-           :margin-bottom  "0em"
-           :margin-top     "0em"
-           :padding-bottom "var(--space-s)"}}
+  {:style {:background    "var(--color-blue)"
+           :border-radius "var(--space-xs)"
+           :color         "var(--color-sand)"
+           :grid-column   "1 / -1"
+           :line-height   1.0
+           :margin-bottom "0em"
+           :margin-top    "0em"
+           :padding       "var(--space-s)"}}
   [:span {:class "main-ns"} "site." [:wbr] "fabricate." [:wbr] "api"
    #_"site.fabricate.api"] [:br] [:span {:class "ns-annotation"} "Namespace"]]
- [:div {:style {:grid-column "span 4"}} (:doc (meta doc-ns))]]
+ [:div {:style {:grid-column "1 / -1" :max-width "60ch"}} (:doc (meta doc-ns))]]
 
-;;Fabricate's API is meant to be used in a specific order.  This document
-;;explains each core aspect step-by-step.
+;;Fabricate's API is meant to be used in 3 steps, each specified by a function
+;;and a corresponding multimethod.
+^{:kindly/kind :kind/hiccup}
+[:ol {:class "api-toc" :style {}}
+ [:li "1."
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/plan!"
+    :style {:background-color "var(--color-brown)"}} "plan!"]
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/collect"
+    :style {:background-color "var(--color-green)"}} "collect"]]
+ [:li "2."
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/assemble"
+    :style {:background-color "var(--color-brown)"}} "assemble"]
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/build"
+    :style {:background-color "var(--color-green)"}} "build"]]
+ [:li "3."
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/construct!"
+    :style {:background-color "var(--color-brown)"}} "construct!"]
+  [:a
+   {:class "card-sm"
+    :href  "#site.fabricate.api/produce!"
+    :style {:background-color "var(--color-green)"}} "produce!"]]]
+
+;; The rest of this this document explains each of these steps.
+
 
 ^{:kindly/kind :kind/hiccup}
 (elements/function-card #'api/plan!
@@ -154,19 +186,22 @@
 ;; of
 ;; the given document format. By default, this is a HTML file, generated from
 ;; the Hiccup data built in the assemble step.
-
-;; The produce! multimethod returns an entry with a key added:
 ^{:kindly/kind :kind/hiccup}
-[:code {:class "language-clojure keyword"} ":site.fabricate.page/location"]
-;; . This key indicates the URL or file path of a generated page.
-^{:kindly/kind :kind/hiccup}
-[:figure {:style {:grid-column "3 / span 4" :margin 0}}
- [:img {:src "/media/api-illustration.svg"}]]
+[:p {:class "clojure-comment"}
+ "The produce! multimethod returns an entry with a key added: "
+ [:code {:class "language-clojure keyword"} ":site.fabricate.page/location"]
+ ". This key indicates the URL or file path of a generated page."]
+#_^{:kindly/kind :kind/hiccup}
+  [:figure
+   {:style {:grid-column   "1 / span 4"
+            :margin-bottom "var(--space-xl)"
+            :margin-top    "var(--space-xl)"}}
+   [:img {:src "/media/api-illustration.svg"}]]
 ^{:kindly/kind :kind/hiccup}
 [:h2
  {:id    "in-use"
   :style {:border-bottom "solid var(--color-yellow) var(--grid-gap-x)"
-          :font-size     "var(--font-big)"}} "In use"]
+          :font-size     "var(--step-4)"}} "In use"]
 
 ;;The API provides an elegant combination of extensibility and ease of use.
 ;;This
@@ -184,7 +219,7 @@
                         [site.fabricate.prototype.hiccup :as hiccup]
                         [dev.onionpancakes.chassis.core :as c]))]]
 
-^:kindly/hide-code
+^{:kindly/hide-code true :kindly/hide-result true}
 (def build-ns-zip
   (z/of-node (parser/parse-file-all "src/site/fabricate/dev/build.clj")))
 ^{:kindly/kind :kind/hiccup}
@@ -195,12 +230,12 @@
 ;; for each of these multimethods.
 
 ^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--font-medium)"}} "1. "
+[:h4 {:style {:font-size "var(--step-3)"}} "1. "
  [:code {:class "language-clojure symbol"} "api/collect"]]
 
 ;; This implementation generates entries from each Fabricate template.
 ^{:kindly/kind :kind/hiccup}
-[:pre {:id "collect-template-example"}
+[:pre {:id "collect-template-example" :style {:grid-column "1 / -1"}}
  [:code {:class "language-clojure"}
   (-> build-ns-zip
       (z/find-next (fn [zloc]
@@ -217,7 +252,7 @@
 ;; To dynamically create the contents of the README from a template, Fabricate
 ;; also defines a single-file source for it:
 ^{:kindly/kind :kind/hiccup}
-[:pre {:id "collect-readme-example"}
+[:pre {:id "collect-readme-example" :style {:grid-column "1 / -1"}}
  [:code {:class "language-clojure"}
   (-> build-ns-zip
       (z/find-next (fn [zloc]
@@ -232,13 +267,13 @@
 
 
 ^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--font-medium)"}} "2. "
+[:h4 {:style {:font-size "var(--step-3)"}} "2. "
  [:code {:class "language-clojure symbol"} "api/build"]]
 ;; This implementation of the build multimethod evaluates Fabricate's templates
 ;; and produces Hiccup from the results.
 
 ^{:kindly/kind :kind/hiccup}
-[:pre
+[:pre {:style {:grid-column "1 / -1"}}
  [:code {:class "language-clojure"}
   (-> build-ns-zip
       (z/find-next (fn [zloc]
@@ -252,14 +287,14 @@
       utils/expr->hiccup)]]
 
 ^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--font-medium)"}} "3. "
+[:h4 {:style {:font-size "var(--step-3)"}} "3. "
  [:code {:class "language-clojure symbol"} "api/produce!"]]
 
 ;; This implementation of the produce! generates HTML from Hiccup elements.
 
 
 ^{:kindly/kind :kind/hiccup}
-[:pre
+[:pre {:style {:grid-column "1 / -1"}}
  [:code {:class "language-clojure"}
   (-> build-ns-zip
       (z/find-next (fn [zloc]
