@@ -41,22 +41,75 @@ this stylesheet.
     --color-burntorange: #632300;
     --display-sans: 'Lapidar 03', sans-serif;
     --sans: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'segoe ui', 'helvetica neue', helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-    --grid-gap-x: min(10px, 1vw);
-    --font-main: clamp(14px, 3vmin, 20px);
-    --font-big: clamp(22px, 9.5vmin, 56px);
-    --font-medium: clamp(15px, 4.5vmin, 22px);
+    --grid-gap-x: var(--grid-gutter);
+
+    /* fonts */
+    --font-display: 'Lapidar 03', sans-serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'segoe ui', 'helvetica neue', helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    --font-mono: Commit Mono, CommitMonoV142, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+
+    /* borders */
+    --border-offset: var(--space-m) var(--space-xs) var(--space-xs) var(--space-xs);
 
 }
 
+/* defaults go in html/main  */
+
+
+html {
+    background-color: var(--color-sand);
+}
+
+main {
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    margin-left: var(--space-s);
+    margin-right: var(--space-s);
+}
+
+:where(pre, code, samp) {
+    font-family: var(--font-mono);
+}
+
+:where(pre, samp) {
+    font-size: var(--step--1);
+}
+
+:where(h1,h2,h3,h4,h5,h6) {
+    font-family: var(--font-display);
+    font-weight: 900;
+}
+
+h1 {
+    font-size: var(--step-5);
+    margin-top: var(--space-2xs);
+    margin-bottom: var(--space-m);
+}
+
+h2 {
+    font-size: var(--step-4);
+    margin-top: var(--space-3xs);
+    margin-bottom: var(--space-s);
+}
+
+h3 {
+    font-size: var(--step-3);
+}
+
+h4 {
+    font-size: var(--step-2);
+}
+
+:where(p, li) code {
+    font-size: 0.9rem;
+}
+
+
 article {
-  font-family: var(--sans);
+  font-family: var(--font-sans);
  /* font-size: min(3vmin, 20px); */
-  font-size: var(--font-main);
+  font-size: var(--step-0);
   line-height: 1.28;
-  display: grid;
-  grid-template-columns: repeat(8, minmax(3px, 1fr));
-  grid-column-gap: var(--grid-gap-x);
-  grid-row-gap: 0.3em;
   color: var(--color-darkbrown);
 }
 
@@ -64,16 +117,6 @@ body {
   background: var(--color-sand);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--display-sans), sans-serif;
-  font-weight: 900;
-  grid-column: 2 / 8;
-}
-.main-track {
-    grid-column: 2 / 8;
-    /* display: grid; */
-    /* grid-template-columns: subgrid; */
-}
 .subgrid {
     grid-column: 1 / -1;
     display: grid;
@@ -95,14 +138,9 @@ article>section:not(.main-track, .subgrid, .card) {
 
 
 
-h1,h2,h3,h4,h5,h6 {
- margin-top: 0.12em;
- margin-bottom: 0.12em;
-}
-
 p {
   margin-top: 0em;
-  margin-bottom: 0.67em;
+  margin-bottom: var(--space-xs);
   grid-column: 2 / 8;
   max-width: 55ch;
 }
@@ -130,23 +168,7 @@ a {
 }
 
 .prop-txt {
-    font-family: var(--sans);
-}
-
-
-pre {
-  margin-top: 0;
-  margin-bottom: 0;
-  grid-column: 2 / 8;
-  font-size: 0.85em;
-}
-
-.xl {
-  font-size: 4em;
-}
-
-h1 {
-  /* font-size: 2em; */
+    font-family: var(--font-sans);
 }
 
 :not(.code-big) .language-clojure.keyword {
@@ -155,7 +177,6 @@ h1 {
 :not(.code-big) .language-clojure.symbol {
     color: var(--color-darkgreen);
 }
-
 
 p:empty {
     display: none;
@@ -167,10 +188,8 @@ p:-moz-only-whitespace {
 }
 
 footer {
-    font-family: var(--sans);
+    font-family: var(--font-sans);
 }
-
-
 .bg-green {
     background: var(--color-green);
 }
@@ -190,14 +209,14 @@ footer {
 }
 
 .main-ns, .primary-fn {
-    font-size: var(--font-big);
+    font-size: var(--step-5);
     font-weight: 900;
     grid-column-start: 1;
 }
 
 .ns-annotation, .primary-fn-fqn {
     font-weight: 500;
-    font-size: var(--font-medium);
+    font-size: var(--step-2);
     grid-column-start: 1;
 }
 
@@ -217,8 +236,8 @@ footer {
 }
 
 .fn-description > dt {
-    font-family: var(--display-sans);
-    font-size: var(--font-medium);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
     font-weight: 800;
     grid-column: 1 / 2;
 }
@@ -236,6 +255,158 @@ footer {
 
 .fn-description > dd ul,ol {
     padding-left: calc(var(--grid-gap-x) * 3);
+}
+
+
+.fn-card, .multimethod-card {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-l);
+    /* border: var(--space-2xs) solid var(--color-brown); */
+}
+
+.fn-card .fn-identifiers {
+    background: var(--color-brown);
+    color: var(--color-sand);
+    padding: var(--space-2xs);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    grid-column: 1 / -1;
+    border-radius: var(--border-offset);
+}
+.multimethod-card .multimethod-identifiers {
+    background: var(--color-green);
+    color: var(--color-sand);
+    padding: var(--space-2xs);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    grid-column: 1 / -1;
+    border-radius: var(--border-offset);
+
+}
+
+.fn-card .fn-identifiers>h2 {
+    margin-bottom: 0em;
+}
+
+.multimethod-card .multimethod-name {
+    font-size: var(--step-5);
+}
+
+.fn-card .fn-name {
+    font-size: var(--step-5);
+}
+
+.fqn {
+    font-size: var(--step-1);
+    font-family: var(--font-mono);
+}
+.fn-card .fn-data  {
+    margin-top: var(--space-3xs);
+    margin-bottom: 0;
+    grid-column: 1 / -1;
+    font-size: var(--step--1);
+}
+
+.fn-data dl {
+    grid-column: span 4;
+    display: grid;
+    grid-template-columns: subgrid;
+    margin: 0;
+    row-gap: var(--space-3xs);
+}
+
+
+
+
+.multimethod-card .multimethod-data {
+    margin-top: var(--space-2xs);
+    margin-bottom: 0;
+    grid-column: 1 / -1;
+    font-size: var(--step--1);
+    /* display: inline-grid; */
+    /* grid-template-columns: subgrid; */
+    grid-row-gap: var(--space-3xs);
+}
+
+.multimethod-data dl {
+    grid-column: span 4;
+    display: grid;
+    grid-template-columns: subgrid;
+    margin: 0;
+}
+
+.multimethod-data dl dt {
+    grid-column: 1 / 2;
+    text-align: right;
+    font-family: var(--font-display);
+}
+
+.multimethod-data dl dd {
+    grid-column: span 3;
+}
+
+.multimethod-example {
+    grid-column: span 4;
+}
+
+.multimethod-example pre {
+    /* background-color: var(--color-clay); */
+    border-radius: var(--space-2xs);
+    font-size: var(--step--2);
+    margin: 0;
+}
+
+.multimethod-example h3 {
+    font-size: var(--step-1);
+    margin: 0;
+    /* background-color: var(--color-green); */
+    /* color: var(--color-sand); */
+    /* padding: var(--space-3xs); */
+    /* border-radius: var(--space-3xs); */
+    /* display: inline; */
+
+}
+
+
+
+.fn-data dt {
+    grid-column: 1 / span 1;
+    font-family: var(--font-display);
+    /* background-color: var(--color-brown); */
+    /* color: var(--color-brown); */
+    /* padding: var(--space-3xs); */
+    /* border-radius: var(--space-3xs); */
+    text-align: right;
+    font-size: var(--step--1);
+}
+
+/* .function-data div { */
+/*     justify-self: right; */
+/* } */
+.fn-data dd {
+    grid-column: span 3;
+    /* padding: var(--space-3xs); */
+}
+
+.function-data dd code {
+    font-size: calc(var(--step--1) * 0.9);
+}
+
+
+.u-grid-flex .clojure-comment {
+    grid-column: 1 / -1;
+    max-width: 60ch;
+}
+
+.u-grid-flex .clojure-form {
+    font-size: var(--step--1);
+    grid-column: span 4;
 }
 
 .card {
@@ -261,9 +432,9 @@ footer {
 
 .card dl dt {
     grid-column: 1 / 3;
-    font-family: var(--display-sans);
+    font-family: var(--font-display);
     font-weight: 900;
-    font-size: var(--font-medium);
+    font-size: var(--step-2);
     margin-left: 0.15rem;
 }
 
@@ -320,9 +491,9 @@ footer {
 
 .split dl dt {
     grid-column: 1 / 4;
-    font-family: var(--display-sans);
+    font-family: var(--font-display);
     font-weight: 900;
-    font-size: var(--font-medium);
+    font-size: var(--step-2);
     padding-left: 0.15em;
     padding-right: 0.15em;
 }
@@ -414,8 +585,8 @@ footer.main-footer {
     flex-flow: row wrap;
     align-items: center;
     justify-content: start;
-    font-family: var(--display-sans);
-    font-size: var(--font-medium);
+    font-family: var(--font-display);
+    font-size: var(--step-3);
     font-weight: 900;
 }
 
@@ -455,7 +626,7 @@ footer .footer-top {
 }
 
 .big-text {
-    font-size: var(--font-big)
+    font-size: var(--step-5)
 }
 
 .fabricate-error {
@@ -466,7 +637,7 @@ footer .footer-top {
 
 .fabricate-error h6 {
     grid-column: 1 / 7;
-    font-size: var(--font-medium);
+    font-size: var(--step-2);
     background: var(--color-burntorange);
     color: var(--color-sand);
 }
@@ -509,11 +680,11 @@ footer .footer-top {
 
 .header-big .header-primary {
     grid-column: 2 / 7;
-    font-size: var(--font-big);
+    font-size: var(--step-5);
     margin: 0;
     line-height: 1em;
 }
 .header-big .header-secondary {
     grid-column: 2 / 7;
-    font-size: calc(var(--font-medium) * 1.25);
+    font-size: calc(var(--step-2) * 1.25);
 }

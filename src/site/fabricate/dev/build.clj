@@ -275,7 +275,7 @@
   [{source-location :site.fabricate.source/location :as entry} _opts]
   (let [output-file
         (fs/file (str (output-path
-                       (if (= ".fab" (fs/extension source-location))
+                       (if (= "fab" (fs/extension source-location))
                          (fs/strip-ext (fs/strip-ext source-location))
                          (fs/strip-ext (:site.fabricate.source/location entry)))
                        (:site.fabricate.page/location entry))

@@ -72,55 +72,14 @@
   /* Space xs-m: 11px → 36px */
   --space-xs-m: clamp(0.6875rem, 0.2919rem + 1.9778vw, 2.25rem);
 
+  --grid-gutter: var(--space-2xs-xs);
 
-
-/* @link https://utopia.fyi/grid/calculator?c=320,18,1.25,1600,24,1.333,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|5|7.2,s-l|l-3xl&g=3xs,s,4xl,8 */
-
-  --grid-max-width: 100.00rem;
-  --grid-gutter: var(--space-3xs-s, clamp(0.3125rem, 0.0156rem + 1.4844vw, 1.5rem));
-  --grid-columns: 8;
-
-  /* colors */
-
-    --color-white: #fcfbe7;
-    --color-lightgray: #f2efe4;
-    --color-clay: #c8beb7;
-    --color-sand: #F0EEEA;
-    --color-brown: #926844;
-    --color-darkbrown: #34281D;
-    --color-lightgreen: #afc38d;
-    --color-green:  #3F6226;
-    --color-gray:  #656565;
-    --color-blue: #3C506F;
-    --color-yellow: #AFA840;
-    --color-darkgreen: #505D3B;
-    --color-orange: #f96500;
-    --color-burntorange: #632300;
-
-    /* fonts */
-    --font-display: 'Lapidar 03', sans-serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'segoe ui', 'helvetica neue', helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-    --font-mono: Commit Mono, CommitMonoV142, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
-
-
-}
-
-.u-container {
-  max-width: var(--grid-max-width);
-  padding-inline: var(--grid-gutter);
-  margin-inline: auto;
-}
-
-.u-grid {
-  display: grid;
-  gap: var(--grid-gutter);
 }
 
 /* column notes */
 
 /* 2xs gutter + 4 columns @ 320px viewport =
   min col size of 70px */
-
 
 .u-grid-flex {
     /* https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
@@ -133,8 +92,8 @@
     --grid-item-max-width: calc((100% - var(--total-gap-width)) / var(--max-column-count));
     --grid-column-width: max(var(--grid-item-min-width), var(--grid-item-max-width));
 
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-column-width), 1fr));
-    grid-gap: var(--grid-gutter);
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-column-width), 1fr));
+    grid-column-gap: var(--grid-gutter);
 
 }
 
@@ -150,57 +109,4 @@
 /* anything after a header starts a new row */
 .u-grid-flex > :where(h1,h2,h3,h4,h5,h6) + * {
     grid-column: 1 / span 4;
-}
-
-
-/* defaults go in html/main  */
-
-
-html {
-    background-color: var(--color-sand);
-}
-
-main {
-    font-family: var(--font-sans);
-    font-size: var(--step-1);
-    margin-left: var(--space-s);
-    margin-right: var(--space-s);
-}
-
-:where(pre, code, samp) {
-    font-family: var(--font-mono);
-}
-
-:where(pre, samp) {
-    font-size: var(--step--1);
-    line-height: 1.35;
-}
-
-:where(h1,h2,h3,h4,h5,h6) {
-    font-family: var(--font-display);
-    font-weight: 900;
-}
-
-h1 {
-    font-size: var(--step-5);
-    margin-top: var(--space-2xs);
-    margin-bottom: var(--space-m);
-}
-
-h2 {
-    font-size: var(--step-4);
-    margin-top: var(--space-3xs);
-    margin-bottom: var(--space-s);
-}
-
-h3 {
-    font-size: var(--step-3);
-}
-
-h4 {
-    font-size: var(--step-2);
-}
-
-:where(p, li) code {
-    font-size: calc(var(--step-1) * 0.9);
 }
