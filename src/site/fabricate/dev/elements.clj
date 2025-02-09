@@ -1,7 +1,9 @@
 (ns site.fabricate.dev.elements
   (:require [dev.onionpancakes.chassis.core :as c]
             [cybermonday.core :as md]
-            [site.fabricate.dev.build.utils :as utils]))
+            [site.fabricate.adorn :as adorn]
+            [site.fabricate.dev.build.utils :as utils]
+            [clojure.string :as str]))
 
 (defn footer
   ([top-id]
@@ -130,3 +132,51 @@
     ;; needs a UUID-like thing so that a URL can be generated from its
     ;; fully-qualified name
     [:div {:class "fn-doc" :id id :data-clojure-var (str fn-var)}]))
+
+(defn function-dl
+  [vars]
+  (->> vars
+       (filter (fn [[k v]] (fn? (var-get v))))
+       (reduce (fn [l [k v]]
+                 (conj l
+                       [:dt [:code {:class "language-clojure symbol"} k]]
+                       [:dd
+                        [:dl [:dt "Description"] [:dd (:doc (meta v))]
+                         [:dt "Arguments"]
+                         [:dd
+                          (apply conj
+                                 [:ul {:style {:list-style-type "none"}}]
+                                 (map (fn [a] [:li
+                                               [:code
+                                                {:class "language-clojure"}
+                                                (adorn/clj->hiccup a)]])
+                                      (:arglists (meta v))))]]]))
+               [:dl {:class "var-list u-grid-flex"}])))
+
+(defn constants-dl
+  [vars]
+  (->> vars
+       (filter (fn [[k v]] (not (fn? (var-get v)))))
+       (reduce (fn [l [k v]]
+                 (conj
+                  l
+                  [:dt [:code {:class "language-clojure symbol"} k]]
+                  [:dd
+                   [:dl [:dt "Description"] [:dd (:doc (meta v))] [:dt "Type"]
+                    [:dd [:code (adorn/clj->hiccup (type (var-get v)))]]]]))
+               [:dl {:class "var-list u-grid-flex"}])))
+
+(defn breakup-sym [sym] (interpose '("." [:wbr]) (str/split (str sym) #"\.")))
+
+(comment
+  (#'site.fabricate.prototype.hiccup/parse-paragraphs
+   (into [:span] '("site" ("." [:wbr]) "fabricate" ("." [:wbr]) "api"))))
+
+(defn ns-header
+  [nmspc]
+  [:header {:id "top" :class "ns-header"}
+   [:h1 (into [:span {:class "ns-name"}] (breakup-sym (ns-name nmspc))) [:br]
+    [:span {:class "ns-annotation"} "Namespace"]]
+   [:p {:class "ns-description"} (:doc (meta nmspc))]])
+
+(ns-name (find-ns 'site.fabricate.api))

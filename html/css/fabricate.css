@@ -63,8 +63,8 @@ html {
 main {
     font-family: var(--font-sans);
     font-size: var(--step-0);
-    margin-left: var(--space-s);
-    margin-right: var(--space-s);
+    margin-left: var(--grid-gutter);
+    margin-right: var(--grid-gutter);
 }
 
 :where(pre, code, samp) {
@@ -103,7 +103,7 @@ h4 {
 }
 
 :where(p, li) code {
-    font-size: 0.9rem;
+    font-size: 0.9em;
 }
 
 
@@ -138,14 +138,40 @@ article>section:not(.main-track, .subgrid, .card) {
     grid-template-columns: subgrid;
 }
 
-
-
-p {
-  margin-top: 0em;
-  margin-bottom: var(--space-xs);
-  grid-column: 2 / 8;
-  max-width: 55ch;
+dl.var-list {
+    grid-column: 1 / -1;
+    margin-top: 0;
 }
+dl.var-list dt {
+    grid-column: 1 / span 1;
+}
+dl.var-list dd {
+    grid-column: span 3;
+}
+
+header.ns-header {
+    grid-column: 1 / -1;
+}
+.ns-header h1 {
+    margin-bottom: var(--space-xs);
+    line-height: 0.9;
+    padding: var(--space-xs);
+    border-radius: var(--space-2xs);
+    color: var(--color-sand);
+    background-color: var(--color-blue);
+
+}
+
+.example-rows {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+.example-row {
+    grid-column: span 4;
+    font-size: var(--step--1);
+}
+
 
 dd, li {
     max-width: 55ch;
@@ -345,6 +371,7 @@ footer {
     display: grid;
     grid-template-columns: subgrid;
     margin: 0;
+    row-gap: var(--space-3xs);
 }
 
 .multimethod-data dl dt {
@@ -429,6 +456,12 @@ ol.api-toc {
 .u-grid-flex .clojure-comment {
     grid-column: 1 / -1;
     max-width: 60ch;
+}
+.fabricate-article.u-grid-flex p {
+    grid-column: 1 / -1;
+    max-width: 60ch;
+    margin-top: 0;
+    margin-bottom: var(--space-xs);
 }
 
 .u-grid-flex .clojure-form {
@@ -624,7 +657,7 @@ footer.main-footer {
     align-items: center;
     justify-content: start;
     font-family: var(--font-display);
-    font-size: var(--step-3);
+    font-size: var(--step-2);
     font-weight: 900;
 }
 
@@ -666,13 +699,13 @@ footer .footer-top {
 }
 
 .fabricate-error {
-    grid-column: 2 / 8;
+    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: subgrid;
 }
 
 .fabricate-error h6 {
-    grid-column: 1 / 7;
+    grid-column: 1 / span 4;
     font-size: var(--step-2);
     background: var(--color-burntorange);
     color: var(--color-sand);
@@ -681,20 +714,24 @@ footer .footer-top {
 .fabricate-error dl {
     display: grid;
     grid-template-columns: subgrid;
-    grid-column: 1 / 7;
+    grid-column: 1 / -1;
 }
 
 .fabricate-error dl dt {
-    grid-column: 1 / 3;
+    grid-column: 1 / 2;
     font-weight: 700;
 }
 .fabricate-error dl dd {
-    grid-column: 3 / 7;
+    grid-column: span 6;
     margin-left: 0;
 }
 
 .fabricate-error details {
-    grid-column: 1 / 7;
+    grid-column: 1 / -1;
+}
+
+.fabricate-src, .instaparse-grammar {
+    grid-column: 1 / -1;
 }
 
 .header-big {

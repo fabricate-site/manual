@@ -135,22 +135,24 @@
 ;; example of single-file handling; conflict resolution can be handled
 ;; separately if there's overlap.
 
-(defmethod api/collect "README.md.fab"
-  [src options]
-  [{:site.fabricate.source/location (fs/file src)
-    :site.fabricate.api/source      src
-    :site.fabricate.source/created  (time/file-created src)
-    :site.fabricate.source/modified (time/file-modified src)
-    :site.fabricate.page/title      "Fabricate: README"
-    :site.fabricate.source/format   :site.fabricate.markdown/v0
-    :site.fabricate.document/format :markdown
-    :site.fabricate.page/outputs    [{:site.fabricate.page/format :markdown
-                                      :site.fabricate.page/location
-                                      (fs/file
-                                       (str (:site.fabricate.page/publish-dir
-                                             options)
-                                            "/README.md"))}]}])
+#_(defmethod api/collect "README.md.fab"
+    [src options]
+    [{:site.fabricate.source/location (fs/file src)
+      :site.fabricate.api/source      src
+      :site.fabricate.source/created  (time/file-created src)
+      :site.fabricate.source/modified (time/file-modified src)
+      :site.fabricate.page/title      "Fabricate: README"
+      :site.fabricate.source/format   :site.fabricate.markdown/v0
+      :site.fabricate.document/format :markdown
+      :site.fabricate.page/outputs    [{:site.fabricate.page/format :markdown
+                                        :site.fabricate.page/location
+                                        (fs/file
+                                         (str (:site.fabricate.page/publish-dir
+                                               options)
+                                              "/README.md"))}]}])
 
+(comment
+  (hiccup/doc-header {}))
 
 (defn fabricate-v0->hiccup
   "Generate a Hiccup representation of the page by evaluating the parsed Fabricate template of the page contents."
@@ -164,11 +166,16 @@
                                                ;; TODO: better handling of
                                                ;; unbound metadata vars
                                                (if (map? m) m {})))
-        hiccup-page    [:html (hiccup/doc-header page-metadata)
+        hiccup-page    [:html
+                        (conj (hiccup/doc-header page-metadata)
+                              [:link
+                               {:rel "stylesheet" :href "/css/utopia.css"}])
                         [:body
                          [:main
                           (apply conj
-                                 [:article {:lang "en-us"}]
+                                 [:article
+                                  {:lang  "en-us"
+                                   :class "u-grid-flex fabricate-article"}]
                                  (hiccup/parse-paragraphs evaluated-page))]
                          (elements/footer)
                          #_[:footer [:div [:a {:href "/"} "Home"]]]]]]

@@ -1,5 +1,5 @@
+^{:kindly/hide-code true :kindly/hide-result true}
 (ns site.fabricate.docs.reference.namespaces.api
-  ;; {:kindly/hide-code true :kindly/hide-result true}
   {:site.fabricate.document/title "Fabricate: API"}
   (:require [site.fabricate.api :as api]
             [cybermonday.core :as md]
@@ -11,7 +11,13 @@
             [rewrite-clj.parser :as parser]
             [rewrite-clj.node :as node]))
 
-^:kindly/hide-code (def doc-ns (find-ns 'site.fabricate.api))
+
+^{:kindly/hide-code true :kindly/hide-result true}
+(def build-ns-zip
+  (z/of-node (parser/parse-file-all "src/site/fabricate/dev/build.clj")))
+
+^{:kindly/hide-code true :kindly/hide-result true}
+(def doc-ns (find-ns 'site.fabricate.api))
 
 ^{:kindly/kind :kind/hiccup}
 [:div
@@ -31,7 +37,8 @@
            :padding       "var(--space-s)"}}
   [:span {:class "main-ns"} "site." [:wbr] "fabricate." [:wbr] "api"
    #_"site.fabricate.api"] [:br] [:span {:class "ns-annotation"} "Namespace"]]
- [:div {:style {:grid-column "1 / -1" :max-width "60ch"}} (:doc (meta doc-ns))]]
+ [:div {:style {:grid-column "1 / -1" :max-width "60ch"}}
+  (:doc (meta (find-ns 'site.fabricate.api)))]]
 
 ;;Fabricate's API is meant to be used in 3 steps, each specified by a function
 ;;and a corresponding multimethod.
@@ -90,7 +97,7 @@
 ^{:kindly/kind :kind/hiccup}
 (elements/multimethod-card
  #'api/collect
- {:args    [:ol [:li "Source"] [:li "Options map"]]
+ {:args    [:ol [:li "Entry map"] [:li "Options map"]]
   :returns "A sequence of entries, specified as maps."}
  [:pre #_{:class "multimethod-example"}
   (utils/expr->hiccup '(defmethod
@@ -124,9 +131,21 @@
 ^{:kindly/kind :kind/hiccup}
 (elements/multimethod-card
  #'api/build
- {:args    ""
+ {:args    [:ol [:li "Entry map"] [:li "Options map"]]
   :returns [:span "An entry with the "
-            [:code (clj->hiccup :site.fabricate.document/data)] " key added."]})
+            [:code (clj->hiccup :site.fabricate.document/data)] " key added."]}
+ [:pre
+  [:code {:class "language-clojure"}
+   (-> build-ns-zip
+       (z/find-next (fn [zloc]
+                      (let [n      (z/node zloc)
+                            cforms (node/child-sexprs n)]
+                        (and cforms
+                             (= 'defmethod (first cforms))
+                             (= 'api/build (second cforms))
+                             (= [:clojure/v0 :hiccup] (nth cforms 2))))))
+       z/sexpr
+       utils/expr->hiccup)]])
 
 
 ;; Build dispatches on two keys for each entry:
@@ -143,13 +162,11 @@
 
 
 
-;; When built, the entry will have a key -
+;;
 ^{:kindly/kind :kind/hiccup}
-[:code {:class "language-clojure keyword"} ":site.fabricate.document/data"]
-;;  - containing the document after its conversion into Clojure data.
-;;  Fabricate's default build methods return Hiccup from one of Fabricate's 3
-;;  built-in sources: Fabricate templates, Clojure source code, and Markdown
-;;  files.
+[:p {:class "clojure-comment"} "When built, the entry will have a key - "
+ [:code {:class "language-clojure keyword"} ":site.fabricate.document/data"]
+ " - containing the document after its conversion into Clojure data. Fabricate's default build methods return Hiccup from one of Fabricate's 2 built-in sources: Fabricate templates, Clojure source code."]
 
 ;; However, because it dispatches on any keyword, your implementation of build
 ;; can extend Fabricate to any method of representing structured information in
@@ -162,21 +179,20 @@
 ;; step to produce output pages for the site.
 
 ;; By default, they are HTML. Any other output format could be generated from
-;; the entries by ^{:kindly/kind :kind/hiccup}  [:code {:class
-;; "language-clojure
-;; keyword"} "produce!"]
+;; the entries by specifying the appropriate produce! implementation.
 
 ^{:kindly/kind :kind/hiccup}
-(elements/multimethod-card #'api/produce!
-                           {:args    [:ol [:li "An entry map"]
-                                      [:li "An options map"]]
-                            :returns "An entry, specified as a map."})
+(elements/multimethod-card
+ #'api/produce!
+ {:args    [:ol [:li "Entry map"] [:li "Options map"]]
+  :returns [:span "An entry with the "
+            [:code (clj->hiccup :site.fabricate.page/location)] " key added."]})
 
 ;; The produce! multimethod creates output for the entry passed as an argument.
 ;; It dispatches on two keys:
 
 ^{:kindly/kind :kind/hiccup}
-[:ol {:style {:grid-column "2 / 6"}}
+[:ol #_{:style {:grid-column "2 / 6"}}
  [:li
   [:code {:class "language-clojure keyword"} ":site.fabricate.document/format"]]
  [:li
@@ -201,14 +217,14 @@
 [:h2
  {:id    "in-use"
   :style {:border-bottom "solid var(--color-yellow) var(--grid-gap-x)"
-          :font-size     "var(--step-4)"}} "In use"]
+          :grid-column   "1 / -1"}} "In use"]
 
 ;;The API provides an elegant combination of extensibility and ease of use.
 ;;This
 ;;example is simplified from Fabricate's own page generation code.
 
 ^{:kindly/kind :kind/hiccup}
-[:pre
+[:pre {:style {:grid-column "1 / -1"}}
  [:code {:class "language-clojure"}
   (utils/expr->hiccup '(require
                         [site.fabricate.api :as api]
@@ -219,19 +235,14 @@
                         [site.fabricate.prototype.hiccup :as hiccup]
                         [dev.onionpancakes.chassis.core :as c]))]]
 
-^{:kindly/hide-code true :kindly/hide-result true}
-(def build-ns-zip
-  (z/of-node (parser/parse-file-all "src/site/fabricate/dev/build.clj")))
 ^{:kindly/kind :kind/hiccup}
-[:h3 {:style {:font-size "var(--font-medium)"}} "Setting up with "
- [:code {:class "language-clojure symbol"} "defmethod"]]
+[:h3 "Setting up with " [:code {:class "language-clojure symbol"} "defmethod"]]
 
 ;; Before running the API's 3 main functions, the build process defines methods
 ;; for each of these multimethods.
 
 ^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--step-3)"}} "1. "
- [:code {:class "language-clojure symbol"} "api/collect"]]
+[:h4 "1. " [:code {:class "language-clojure symbol"} "api/collect"]]
 
 ;; This implementation generates entries from each Fabricate template.
 ^{:kindly/kind :kind/hiccup}
@@ -249,26 +260,8 @@
       utils/expr->hiccup)]]
 
 
-;; To dynamically create the contents of the README from a template, Fabricate
-;; also defines a single-file source for it:
 ^{:kindly/kind :kind/hiccup}
-[:pre {:id "collect-readme-example" :style {:grid-column "1 / -1"}}
- [:code {:class "language-clojure"}
-  (-> build-ns-zip
-      (z/find-next (fn [zloc]
-                     (let [n      (z/node zloc)
-                           cforms (node/child-sexprs n)]
-                       (and cforms
-                            (= 'defmethod (first cforms))
-                            (= 'api/collect (second cforms))
-                            (= "README.md.fab")))))
-      z/sexpr
-      utils/expr->hiccup)]]
-
-
-^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--step-3)"}} "2. "
- [:code {:class "language-clojure symbol"} "api/build"]]
+[:h4 "2. " [:code {:class "language-clojure symbol"} "api/build"]]
 ;; This implementation of the build multimethod evaluates Fabricate's templates
 ;; and produces Hiccup from the results.
 
@@ -287,8 +280,7 @@
       utils/expr->hiccup)]]
 
 ^{:kindly/kind :kind/hiccup}
-[:h4 {:style {:font-size "var(--step-3)"}} "3. "
- [:code {:class "language-clojure symbol"} "api/produce!"]]
+[:h4 "3. " [:code {:class "language-clojure symbol"} "api/produce!"]]
 
 ;; This implementation of the produce! generates HTML from Hiccup elements.
 

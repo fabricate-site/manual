@@ -103,7 +103,7 @@
 }
 
 .u-grid-flex > :where(h1,h2,h3,h4,h5,h6) {
-    grid-column: 1 / span 4;
+    grid-column: 1 / -1;
 }
 
 /* anything after a header starts a new row */
