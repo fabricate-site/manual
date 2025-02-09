@@ -191,38 +191,38 @@
           :site.fabricate.document/data
           (slurp (:site.fabricate.source/location entry)))))
 
-(defn entry->html
+(defn clj-entry->hiccup
   [entry]
-  (let [main (-> (:site.fabricate.source/location entry)
-                 (clj/file->forms)
-                 (clj/eval-forms)
-                 (clj/forms->hiccup))
-        updated-entry (merge entry)]
+  (let [[m_ attrs & contents :as main] (-> (:site.fabricate.source/location
+                                            entry)
+                                           (clj/file->forms)
+                                           (clj/eval-forms)
+                                           (clj/forms->hiccup))
+        ns-meta       (-> main
+                          (get-in [1 :data-clojure-namespace])
+                          (find-ns)
+                          meta)
+        updated-entry (merge entry ns-meta)]
     (assoc entry
            :site.fabricate.document/data
            [:html
-            [:head [:title (:site.fabricate.document/title updated-entry)]]
-            [:body main [:footer]]])))
+            [:head [:meta {:charset "UTF-8"}]
+             [:meta
+              {:name    "viewport"
+               :content "width=device-width, initial-scale=1.0"}]
+             [:meta {:http-equiv "X-UA-Compatible" :content "IE-edge"}]
+             [:link {:rel :stylesheet :href "/css/normalize.css"}]
+             [:link {:rel :stylesheet :href "/css/remedy.css"}]
+             [:link {:rel :stylesheet :href "/css/utopia.css"}]
+             [:link {:rel :stylesheet :href "/css/fabricate.css"}]
+             [:title (:site.fabricate.document/title updated-entry)]]
+            [:body [:main attrs [:article {:class "u-grid-flex"} contents]]
+             (elements/footer)]])))
 
 (defmethod api/build [:clojure/v0 :hiccup]
   [{source-location :site.fabricate.source/location :as entry} opts]
   (println "generating hiccup from" (str source-location))
-  (let [main    (-> source-location
-                    (clj/file->forms)
-                    (clj/eval-forms)
-                    (clj/forms->hiccup))
-        ns-meta (-> main
-                    (get-in [1 :data-clojure-namespace])
-                    (find-ns)
-                    meta)]
-    (-> entry
-        (assoc :site.fabricate.document/data
-               [:html
-                [:head [:link {:rel :stylesheet :href "/css/normalize.css"}]
-                 [:link {:rel :stylesheet :href "/css/remedy.css"}]
-                 [:link {:rel :stylesheet :href "/css/utopia.css"}]]
-                [:body main [:footer]]])
-        (merge ns-meta))))
+  (clj-entry->hiccup entry))
 
 (comment
   (api/construct! []
@@ -266,16 +266,20 @@
 
 (comment
   (output-path (fs/path (fs/cwd) "docs/design/utopia.clj") "html")
+  (output-path (fs/path (fs/cwd)
+                        "docs/reference/namespaces.site.fabricate.api.clj")
+               "html")
   (output-path "docs/design/utopia.clj" "html"))
 
 (defn hiccup->html
-  [entry _opts]
-  (let [output-file (fs/file (str (output-path
-                                   (fs/strip-ext
-                                    (fs/strip-ext
-                                     (:site.fabricate.source/location entry)))
-                                   (:site.fabricate.page/location entry))
-                                  ".html"))]
+  [{source-location :site.fabricate.source/location :as entry} _opts]
+  (let [output-file
+        (fs/file (str (output-path
+                       (if (= ".fab" (fs/extension source-location))
+                         (fs/strip-ext (fs/strip-ext source-location))
+                         (fs/strip-ext (:site.fabricate.source/location entry)))
+                       (:site.fabricate.page/location entry))
+                      ".html"))]
     (println "writing output to" (str output-file))
     (write-hiccup-html! (:site.fabricate.document/data entry) output-file)
     (assert (fs/exists? output-file))
@@ -300,11 +304,13 @@
   ;; "return a modified site with modified options" implementation:
   ;; potentially storing a reference to a server or other stateful
   ;; component
-  (do (->> {:site.fabricate.api/options options}
-           (api/plan! setup-tasks)
-           (api/assemble [])
-           (api/construct! []))
+  (do (->> {:site.fabricate.api/options site.fabricate.dev.build/options}
+           (#'site.fabricate.api/plan! site.fabricate.dev.build/setup-tasks)
+           (#'site.fabricate.api/assemble [])
+           (#'site.fabricate.api/construct! []))
       :done)
+  ;;fully-qualified versions of these functions allow you to
+  ;; eval from a register regardless of namespace
   (run! fs/delete (fs/glob "html" "**.html"))
   (.getMethodTable api/produce!)
   (.getMethodTable api/collect)
