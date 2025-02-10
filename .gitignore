@@ -1,3 +1,5 @@
 html/*
 .cpcache
 .nrepl-port
+# Local Netlify folder
+.netlify
