@@ -6,7 +6,7 @@
 🔚
 ✳
 (def metadata
-  {:title "Namespaces" :page-style (slurp "docs/css/fabricate.css")})
+  {:title "Namespaces" })
 🔚
 ✳=
 

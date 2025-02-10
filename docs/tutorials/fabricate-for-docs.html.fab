@@ -11,8 +11,9 @@
 ✳(def metadata {:title "Tutorial: Creating Documentation for Clojure Projects with Fabricate"  })🔚
 ✳=
 (let [[title subtitle] (clojure.string/split (:title metadata) #":")]
-  [:div [:h1 {:class "xl-text"} title]
-   [:h3 subtitle] [:hr]])🔚
+  [:div [:h1 {:style {:margin-bottom "0"}} title]
+   [:h3 {:style {:grid-row "2" :grid-column "1 / -1"
+                 :font-size "var(--step-1)"}} subtitle] [:hr]])🔚
 ✳=[:h2 "Introduction"]🔚
 ✳=[:h3 "What you'll learn in this tutorial:"]🔚
 How to use Fabricate alongside your own code to document your project.
@@ -47,9 +48,8 @@ We'll be doing all the setup we need to do from the Clojure REPL. As long as you
 ]
 ) 🔚
 ✳= [:h2 "Steps"] 🔚
-
-✳= (into [:ol {:class "steps"}]
-       (for [{:keys [step/name step/slug step/summary]} steps] [:li {:class "step"} [:b [:a {:href (str "#" slug) } name]] summary]) ) 🔚
+✳= [:figure (into [:ol {:class "steps"}]
+                (for [{:keys [step/name step/slug step/summary]} steps] [:li {:class "step"} [:b [:a {:href (str "#" slug) } name]] [:br] summary]) )] 🔚
 
 
 ✳= (let [n 0 step (nth steps n)]
@@ -60,9 +60,9 @@ In your Clojure project's folder, you will have a file called ✳=[:code "deps.e
 This file is just an EDN map, defining in plain text an associative array much like Clojure's own hash maps. If you've used JSON before, you can think of EDN like Clojure's version of JSON. The important part is this file maps from certain keys to values - you can add Fabricate to the project by updating the ✳=[:code ":aliases"]🔚 key with a new key. You might already have aliases defined for your project, in which case you'll add another one for Fabricate. If you don't, then you can just add an ✳=[:code ":aliases"]🔚 key with the same information.
 
 
-✳= [:div {:style (garden/style {:width "40ch"})}
+✳= [:div {:style {:grid-column "1 / -1"} :class "subgrid"}
 [:h5 "If you already have aliases defined"]
-[:pre [:code {:class "language-clojure"}
+[:pre {:style {:grid-column "1 / -1"}} [:code {:class "language-clojure"}
        ":aliases {
 :test {:extra-paths [\"test\"]
    :extra-deps org.clojure/test.check {:mvn/version \"1.1.0\"}}" [:br]
@@ -75,9 +75,9 @@ This file is just an EDN map, defining in plain text an associative array much l
        ]]]🔚
 
 
-✳= [:div {:style (garden/style {:flex "40%"})}
+✳= [:div {:style {:grid-column "1 / -1"}}
 [:h5 "If your project doesn't have aliases defined yet"]
-[:pre [:code {:class "language-clojure"}
+[:pre {:style {:grid-column "1 / -1"}}  [:code {:class "language-clojure"}
 "…" [:br]
       [:ins ":aliases {"]
        [:ins

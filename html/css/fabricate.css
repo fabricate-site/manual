@@ -124,6 +124,9 @@ body {
     display: grid;
     grid-template-columns: subgrid;
 }
+.main-track {
+    grid-column: 1 / -1 !important;
+}
 
 /* by default, auto-subgrid certain direct descendants of the main article */
 article>div:not(.main-track, .subgrid, .card) {
@@ -175,6 +178,10 @@ header.ns-header {
 
 dd, li {
     max-width: 55ch;
+}
+
+dd p {
+    margin-top: 0;
 }
 
 a {
