@@ -180,3 +180,12 @@
    [:p {:class "ns-description"} (:doc (meta nmspc))]])
 
 (ns-name (find-ns 'site.fabricate.api))
+
+(def html-head-defaults
+  [:head [:meta {:charset "UTF-8"}]
+   [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
+   [:meta {:http-equiv "X-UA-Compatible" :content "IE-edge"}]
+   [:link {:rel :stylesheet :href "/css/normalize.css"}]
+   [:link {:rel :stylesheet :href "/css/remedy.css"}]
+   [:link {:rel :stylesheet :href "/css/utopia.css"}]
+   [:link {:rel :stylesheet :href "/css/fabricate.css"}]])

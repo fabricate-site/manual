@@ -231,6 +231,43 @@
   (println "generating hiccup from" (str source-location))
   (clj-entry->hiccup entry))
 
+(defn ns-sym->hiccup
+  "Automatically generate a Hiccup page documenting the vars in the given namespace."
+  [ns-sym]
+  (let [nmspc   (find-ns ns-sym)
+        ns-vars (ns-publics nmspc)
+        ns-meta (meta ns-sym)]
+    [:html
+     [:head
+      (conj elements/html-head-defaults
+            [:title (str "Fabricate: " ns-sym " namespace")])]
+     [:body
+      [:main
+       [:article (elements/ns-header nmspc) [:h2 "Functions"]
+        (elements/function-dl ns-vars) [:h2 "Constants"]
+        (elements/constants-dl ns-vars)]] (elements/footer)]]))
+
+(def doc-namespaces '[site.fabricate.prototype.source.clojure])
+
+(defmethod api/collect doc-namespaces
+  [ns-syms opts]
+  (mapv (fn [ns-sym]
+          {:site.fabricate.source/format :clojure.namespace/v0
+           :site.fabricate.document/format :hiccup
+           :site.fabricate.source/location
+           (fs/file
+            (fs/cwd)
+            "docs/reference/namespaces/site.fabricate.prototype.clojure.clj")
+           :site.fabricate.page/format :html
+           :site.fabricate.page/location "html"
+           :clojure/namespace ns-sym})
+        doc-namespaces))
+
+(defmethod api/build [:clojure.namespace/v0 :hiccup]
+  [{entry-ns :clojure/namespace :as entry} opts]
+  (assoc entry :site.fabricate.document/data (ns-sym->hiccup entry-ns)))
+
+
 (comment
   (api/construct! []
                   {:site.fabricate.api/entries
