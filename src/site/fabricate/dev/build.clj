@@ -250,7 +250,7 @@
 
 (def doc-namespaces
   '[site.fabricate.prototype.source.clojure
-    site.fabricate.prototype.source.fabricate])
+    site.fabricate.prototype.source.fabricate site.fabricate.prototype.hiccup])
 
 
 (defmethod api/collect #'doc-namespaces

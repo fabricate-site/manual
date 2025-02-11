@@ -9,15 +9,24 @@
 ✳(def metadata {:title "Glossary"
                :subtitle "Key terms used by Fabricate"})🔚
 
-✳=[:header {:class "card"
+✳=[:header {
           :style {:background "var(--color-blue)"
+                  :border-radius "var(--space-2xs)"
+                  :grid-column "1 / -1"
+                  :padding "var(--space-xs)"
+                  :margin-top "0"
+                  :margin-bottom "0"
                   :outline-color "var(--color-blue)"}} 
- [:h1 {:style {:font-size "var(--font-big)"
+ [:h1 {:style {
                :color "var(--color-sand)"
                :grid-column "1 / -1"}}
   (:title metadata)]
  [:h2 {:style {:background "var(--color-sand)"
                :color "var(--color-blue)"
+               :padding "var(--space-2xs)"
+               :font-size "var(--step-1)"
+               :font-weight "500"
+               :border-radius "var(--space-3xs)"
                :grid-column "1 / -1"}} (:subtitle metadata)]]🔚
 
 
@@ -27,26 +36,6 @@
     (keyword (nth (take-last 1 components) 0) kw-name)))🔚
 
 
-✳=[:dl {:class "subgrid"}
+✳=[:dl {:class "subgrid" :style {:grid-column "1 / -1"}}
 (for [{:keys [term doc type]} api/glossary]
-  (list [:dt {:style {:grid-column "2 / span 2"}} [:code (sub-namespace term)]] [:dd {:style {:grid-column "span 5"}} (md/parse-body doc)]))]🔚
-
-
-✳= [:code {:class "language-clojure symbol"
-         :data-clojure-symbol "site.fabricate.api/plan!"
-         }
-  "site.fabricate.api/plan!"] 🔚
-
-
-✳= [:code {:class "language-clojure symbol"
-         :data-clojure-symbol "site.fabricate.api/assemble"
-         :id (code/css-escape "site.fabricate.api/assemble")
-         }
-  "site.fabricate.api/assemble"] 🔚
-
-
-✳= [:code {:class "language-clojure symbol"
-         :data-clojure-symbol "site.fabricate.api/assemble"
-         :id "site.fabricate.api/assemble"
-         }
-  "site.fabricate.api/assemble"] 🔚
+  (list [:dt {:style {:grid-column "1 / span 2"}} [:code (sub-namespace term)]] [:dd {:style {:grid-column "span 4"}} (md/parse-body doc)]))]🔚
