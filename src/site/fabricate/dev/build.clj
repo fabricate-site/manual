@@ -9,6 +9,7 @@
             [site.fabricate.prototype.hiccup :as hiccup]
             [site.fabricate.prototype.html :as html]
             [site.fabricate.prototype.source.clojure :as clj]
+            [site.fabricate.prototype.source.fabricate]
             [garden.core :as garden]
             [garden.stylesheet :refer [at-import]]
             [rewrite-clj.zip :as z]
@@ -247,19 +248,23 @@
         (elements/function-dl ns-vars) [:h2 "Constants"]
         (elements/constants-dl ns-vars)]] (elements/footer)]]))
 
-(def doc-namespaces '[site.fabricate.prototype.source.clojure])
+(def doc-namespaces
+  '[site.fabricate.prototype.source.clojure
+    site.fabricate.prototype.source.fabricate])
 
-(defmethod api/collect doc-namespaces
-  [ns-syms opts]
+
+(defmethod api/collect #'doc-namespaces
+  [ns-syms {:keys [site.fabricate.page/publish-dir] :as opts}]
   (mapv (fn [ns-sym]
           {:site.fabricate.source/format :clojure.namespace/v0
            :site.fabricate.document/format :hiccup
            :site.fabricate.source/location
-           (fs/file
-            (fs/cwd)
-            "docs/reference/namespaces/site.fabricate.prototype.clojure.clj")
+           (fs/file (fs/cwd) (str "docs/reference/namespaces/" ns-sym ".clj"))
            :site.fabricate.page/format :html
            :site.fabricate.page/location "html"
+           :site.fabricate.page/outputs [{:site.fabricate.page/format :html
+                                          :site.fabricate.page/location
+                                          (fs/file publish-dir)}]
            :clojure/namespace ns-sym})
         doc-namespaces))
 
@@ -269,6 +274,9 @@
 
 
 (comment
+  (->> (api/plan! [] {})
+       :site.fabricate.api/entries
+       (filterv #(= :clojure.namespace/v0 (:site.fabricate.source/format %))))
   (api/construct! []
                   {:site.fabricate.api/entries
                    [(api/build {:site.fabricate.source/location
@@ -364,4 +372,6 @@
   (name :abc/xyz)
   clojure.string/split
   (run! (fn [[_ v]] (clojure.pprint/pprint [v (:doc (meta v))]))
-        (ns-publics (find-ns 'site.fabricate.api))))
+        (ns-publics (find-ns 'site.fabricate.api)))
+  (filterv #(re-find #"fabricate.prototype" (str (ns-name %))) (all-ns))
+  (filterv #(re-find #"fabricate.*page" (str (ns-name %))) (all-ns)))
