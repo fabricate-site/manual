@@ -15,8 +15,6 @@
             [rewrite-clj.zip :as z]
             [site.fabricate.adorn :as adorn]
             [babashka.fs :as fs]
-            [hiccup.page]
-            [hiccup.core]
             [dev.onionpancakes.chassis.core :as c]
             [clojure.string :as str]
             [clojure.java.io :as io]))

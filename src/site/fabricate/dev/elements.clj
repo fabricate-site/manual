@@ -2,6 +2,7 @@
   (:require [dev.onionpancakes.chassis.core :as c]
             [cybermonday.core :as md]
             [site.fabricate.adorn :as adorn]
+            [site.fabricate.prototype.read.grammar :as grammar]
             [site.fabricate.dev.build.utils :as utils]
             [clojure.string :as str]))
 
@@ -189,3 +190,15 @@
    [:link {:rel :stylesheet :href "/css/remedy.css"}]
    [:link {:rel :stylesheet :href "/css/utopia.css"}]
    [:link {:rel :stylesheet :href "/css/fabricate.css"}]])
+
+
+(defn fabricate-example
+  ([expr-or-str ctrl-chars]
+   (let [expr (if (string? expr-or-str)
+                (utils/str->hiccup expr-or-str)
+                (utils/expr->hiccup expr-or-str))]
+     [:code {:class "fabricate-example"}
+      (str (first grammar/delimiters) ctrl-chars " ")
+      [:code {:class "language-clojure"} expr]
+      (str " " (last grammar/delimiters))]))
+  ([expr-or-str] (fabricate-example expr-or-str "")))
