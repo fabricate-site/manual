@@ -167,11 +167,7 @@
                     [:dd [:code (adorn/clj->hiccup (type (var-get v)))]]]]))
                [:dl {:class "var-list u-grid-flex"}])))
 
-(defn breakup-sym [sym] (interpose '("." [:wbr]) (str/split (str sym) #"\.")))
-
-(comment
-  (#'site.fabricate.prototype.hiccup/parse-paragraphs
-   (into [:span] '("site" ("." [:wbr]) "fabricate" ("." [:wbr]) "api"))))
+(defn breakup-sym [sym] (interpose [:wbr] (str/split (str sym) #"(?<=\.)")))
 
 (defn ns-header
   [nmspc]
