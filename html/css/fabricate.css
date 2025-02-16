@@ -80,6 +80,7 @@ this stylesheet.
 
 :root {
     --color-white: #fcfbe7;
+    --color-black: #222;
     --color-lightgray: #f2efe4;
     --color-clay: #c8beb7;
     --color-sand: #F0EEEA;
@@ -759,6 +760,20 @@ a.decor-internal:hover {
     text-decoration: underline;
 }
 
+a.decor-external:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+
+a.decor-external:after {
+    content: "→";
+    margin-left: var(--space-3xs);
+    text-decoration: none;
+}
+
+
+
 footer.main-footer {
     border-top: var(--space-2xs) solid var(--color-darkbrown);
     margin-left: var(--grid-gutter);
@@ -805,6 +820,11 @@ footer .footer-namespaces {
 }
 footer .footer-top {
     background: var(--color-gray);
+    color: var(--color-sand);
+}
+
+footer .footer-github {
+    background: var(--color-darkbrown);
     color: var(--color-sand);
 }
 

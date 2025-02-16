@@ -19,7 +19,11 @@
      [:a {:class "decor-internal" :href "/reference/namespaces.html"}
       "Namespaces"]]
     [:div {:class "footer-top"}
-     [:a {:class "decor-internal" :href top-id} "Top"]]])
+     [:a {:class "decor-internal" :href top-id} "Top"]]
+    [:div {:class "footer-github"}
+     [:a
+      {:href  "https://github.com/fabricate-site/fabricate"
+       :class "decor-external"} "GitHub"]]])
   ([] (footer "#top")))
 
 (def logo-img
