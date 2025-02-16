@@ -167,12 +167,11 @@
                                                ;; unbound metadata vars
                                                (if (map? m) m {})))
         hiccup-page    [:html
-                        (into [:head (:title page-metadata)]
-                              (concat elements/html-head-defaults
-                                      (-> page-metadata
-                                          (select-keys [:title :description
-                                                        :image])
-                                          elements/opengraph-metadata)))
+                        (into (conj elements/html-head-defaults
+                                    [:title (:title page-metadata)])
+                              (-> page-metadata
+                                  (select-keys [:title :description :image])
+                                  elements/opengraph-metadata))
                         [:body
                          [:main
                           (apply conj

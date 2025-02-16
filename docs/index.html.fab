@@ -85,7 +85,7 @@ Fabricate also gives you an API that can generate a website using 3 core functio
 ✳=(list
  [:h2 {:style {:grid-column "1 / 3"
                
-               :text-align "right"}} "A simple API"]
+               :text-align "right"}} "A simple " [:a {:href "/reference/namespaces/site.fabricate.api.html"} "API"]]
  [:pre {:class "code-big"
              :style {:grid-column "4 / -1"
                      :font-weight "600"
