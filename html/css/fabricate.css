@@ -522,6 +522,17 @@ ol.api-toc {
     grid-column: span 1;
 }
 
+.u-grid-flex.md-page p {
+    grid-column: 1 / -1;
+    max-width: 60ch;
+    margin-top: 0;
+    margin-bottom: var(--space-2xs);
+}
+
+:where(ul, ol) {
+    margin-bottom: var(--space-2xs);
+}
+
 .u-grid-flex .clojure-comment {
     grid-column: 1 / -1;
     max-width: 60ch;
@@ -667,12 +678,42 @@ article blockquote {
 
 
 
-blockquote:before {
+/* blockquote:before { */
+/*     content: "“"; */
+/* } */
+/* blockquote:after { */
+/*     content: "”"; */
+/* } */
+
+article>blockquote {
+    background-color: var(--color-clay);
+    padding: var(--space-2xs);
+    border-radius: var(--space-3xs);
+    margin-top: 0;
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-m);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--step-1);
+}
+blockquote>p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+blockquote:nth-child(1) {
+    outline-color: var(--color-black);
+}
+
+
+blockquote:first-child:before {
     content: "“";
 }
-blockquote:after {
+blockquote:last-child:after {
     content: "”";
 }
+
+
 
 article>ul {
     grid-column: 2 / 8;

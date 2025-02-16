@@ -10,6 +10,7 @@
             [site.fabricate.prototype.html :as html]
             [site.fabricate.prototype.source.clojure :as clj]
             [site.fabricate.prototype.source.fabricate]
+            [site.fabricate.dev.source.markdown :as markdown]
             [garden.core :as garden]
             [garden.stylesheet :refer [at-import]]
             [rewrite-clj.zip :as z]
@@ -269,6 +270,42 @@
 (defmethod api/build [:clojure.namespace/v0 :hiccup]
   [{entry-ns :clojure/namespace :as entry} opts]
   (assoc entry :site.fabricate.document/data (ns-sym->hiccup entry-ns)))
+
+(defmethod api/collect "docs/posts/*.md"
+  [glob {:keys [site.fabricate.page/publish-dir :as opts]}]
+  (mapv (fn [src-loc]
+          {:site.fabricate.source/format   :markdown/v0
+           :site.fabricate.document/format :hiccup
+           :site.fabricate.source/location (fs/file src-loc)
+           :site.fabricate.page/format     :html
+           :site.fabricate.page/location   "html"
+           :site.fabricate.page/outputs    [{:site.fabricate.page/format :html
+                                             :site.fabricate.page/location
+                                             (fs/file publish-dir)}]})
+        (fs/glob (System/getProperty "user.dir") glob)))
+
+(defmethod api/build [:markdown/v0 :hiccup]
+  [{source-location :site.fabricate.source/location :as entry} opts]
+  (let [[_div _attrs h1? & contents] (-> source-location
+                                         slurp
+                                         markdown/md->hiccup)
+        h1          (if (and (vector? h1?) (= :h1 (first h1?)))
+                      h1?
+                      [:h1 {} "Fabricate"])
+        title       (or (last h1))
+        page-hiccup [:html
+                     [:head (conj elements/html-head-defaults [:title title])]
+                     [:body
+                      [:main
+                       (into [:article {:class "u-grid-flex md-page"}
+                              (assoc-in h1 [1 :id] "top")]
+                             contents)] (elements/footer)]]]
+    (assoc entry :site.fabricate.document/data page-hiccup)))
+
+(comment
+  (-> "docs/posts/2025-02-api-announcement.md"
+      slurp
+      markdown/md->hiccup))
 
 
 (comment
