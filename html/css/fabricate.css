@@ -19,32 +19,61 @@ this stylesheet.
 
 @font-face {
     font-family: "Commit Mono";
-    font-weight: 200 800;
+    font-weight: 200 700;
     src:
         url("/fonts/CommitMono VariableFont.woff2") format("woff2");
 }
 
 @font-face {
     font-family: "Lapidar 03";
-    font-weight: 200 900;
+    font-weight: 800;
     src:
         url("/fonts/Lapidar03-Black.woff") format("woff");
         url("/fonts/Lapidar03-Black.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 700;
+    src:
         url("/fonts/Lapidar03-Bold.woff") format("woff");
         url("/fonts/Lapidar03-Bold.woff2") format("woff2");
-
+}
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 600;
+    src:
         url("/fonts/Lapidar03-Extrabold.woff") format("woff");
         url("/fonts/Lapidar03-Extrabold.woff2") format("woff2");
+}
 
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 900;
+    src:
         url("/fonts/Lapidar03-FatFat.woff") format("woff");
         url("/fonts/Lapidar03-FatFat.woff2") format("woff2");
+}
 
+
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 300;
+    src:
         url("/fonts/Lapidar03-Light.woff") format("woff");
         url("/fonts/Lapidar03-Light.woff2") format("woff2");
+}
 
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 500;
+    src:
         url("/fonts/Lapidar03-Medium.woff") format("woff");
         url("/fonts/Lapidar03-Medium.woff2") format("woff2");
-
+}
+@font-face {
+    font-family: "Lapidar 03";
+    font-weight: 400;
+    src:
         url("/fonts/Lapidar03-Regular.woff") format("woff");
         url("/fonts/Lapidar03-Regular.woff2") format("woff2");
 }
