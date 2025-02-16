@@ -1,3 +1,8 @@
+---
+{:title "Fabricate's new API"
+ :description "A flexible and stable foundation for Fabricate."
+ :url "https://fabricate.site/posts/2025-02-api-announcement.html"}
+---
 # Fabricate's new API
 **February 2025**
 
@@ -27,14 +32,16 @@ In many other static website generators, features like these are "options" that 
 > The basic principle of recursive design is to make the parts have the same power as the whole.
 [Bob Barton](https://worrydream.com/EarlyHistoryOfSmalltalk/)
 
-This API is stable and will not change. Other features of Fabricate are moving towards stability now that this foundation is in place.
+The flexibility of Fabricate's API allowed me to add Markdown support by loading the [Cybermonday library](https://github.com/kiranshila/cybermonday) and defining just 30 [very simple lines of code](https://github.com/fabricate-site/manual/blob/17498b728f3a6669c4d4aa2b45a07d123d0929d2/src/site/fabricate/dev/build.clj#L274-L303). 
+
+This API is now stable and will not change. Other features of Fabricate are moving towards stability now that this foundation is in place.
 
 ## Clojure evaluation
 Also quite important: it now has a namespace that makes it easier to generate Fabricate documents and pages from plain Clojure source files. I think one of the biggest drawbacks of Fabricate's first release was the template files, which relied on an emacs mode to work effectively in an editor. I hope this makes it easier for users to get started.
 
 You might think of this [Clojure source API](https://fabricate.site/reference/namespaces/site.fabricate.prototype.source.clojure) as a more lighter-weight, less "batteries included" version of Clay that outputs plain HTML.
 
-However, on a conceptual level, Fabricate doesn't necessarily _compete_ with Clay, or Clerk, or even Markdown so much as _aggregate_ them. You could, if you wanted to, generate some parts of your site with Clay or Clerk, and others using Fabricate's functions. I intentionally designed its API to be open-ended and extensible to new ways of generating pages.
+However, on a conceptual level, Fabricate doesn't necessarily _compete_ with Clay, or Clerk, or even Markdown so much as _aggregate_ them. You could, if you wanted to, generate some parts of your site with Clay or Clerk, and others using Fabricate's functions. I intentionally designed its API to be open-ended and extensible to new ways of generating pages. I hope that the API docs give you an idea of how to do that.
 
 ## Planned work
 Markdown support is planned. More design work will be necessary in order to reconcile Markdown's [limitations](https://docs.racket-lang.org/pollen/second-tutorial.html#(part._the-case-against-markdown)) with Fabricate's data model. However, this post was written in Markdown, so interested users can look at Fabricate's [build namespace](https://github.com/fabricate-site/manual/blob/publish/src/site/fabricate/dev/build.clj) to see how it currently supports generating pages from Markdown source files.

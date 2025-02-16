@@ -1,6 +1,7 @@
 ^{:kindly/hide-code true :kindly/hide-result true}
 (ns site.fabricate.docs.reference.namespaces.api
-  {:site.fabricate.document/title "Fabricate: API"}
+  {:site.fabricate.document/title       "Fabricate: API"
+   :site.fabricate.document/description "Core API for Fabricate"}
   (:require [site.fabricate.api :as api]
             [cybermonday.core :as md]
             [dev.onionpancakes.chassis.core :as c]
@@ -10,6 +11,7 @@
             [rewrite-clj.zip :as z]
             [rewrite-clj.parser :as parser]
             [rewrite-clj.node :as node]))
+
 
 
 ^{:kindly/hide-code true :kindly/hide-result true}

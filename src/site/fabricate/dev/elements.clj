@@ -198,3 +198,19 @@
       [:code {:class "language-clojure"} expr]
       (str " " (last grammar/delimiters))]))
   ([expr-or-str] (fabricate-example expr-or-str "")))
+
+(def opengraph-defaults
+  {:title       "Fabricate"
+   :description "Simple, flexible website generation with Clojure"
+   :image       "https://fabricate.site/media/logotype-v1.png"})
+
+(defn opengraph-metadata
+  "Generate opengraph metadata from the given map"
+  [{:keys [title description url image] :as data}]
+  (mapcat (fn [[k v]]
+            (let [k (cond (string? k)  k
+                          (keyword? k) (str (name k))
+                          :default     (str k))]
+              (list [:meta {:property (str "og:" k) :content v}]
+                    [:meta {:property (str "twitter:" k) :content v}])))
+   (merge opengraph-defaults data)))

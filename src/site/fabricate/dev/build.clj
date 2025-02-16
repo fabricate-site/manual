@@ -167,9 +167,12 @@
                                                ;; unbound metadata vars
                                                (if (map? m) m {})))
         hiccup-page    [:html
-                        (conj (hiccup/doc-header page-metadata)
-                              [:link
-                               {:rel "stylesheet" :href "/css/utopia.css"}])
+                        (into [:head (:title page-metadata)]
+                              (concat elements/html-head-defaults
+                                      (-> page-metadata
+                                          (select-keys [:title :description
+                                                        :image])
+                                          elements/opengraph-metadata)))
                         [:body
                          [:main
                           (apply conj
@@ -213,16 +216,15 @@
     (assoc entry
            :site.fabricate.document/data
            [:html
-            [:head [:meta {:charset "UTF-8"}]
-             [:meta
-              {:name    "viewport"
-               :content "width=device-width, initial-scale=1.0"}]
-             [:meta {:http-equiv "X-UA-Compatible" :content "IE-edge"}]
-             [:link {:rel :stylesheet :href "/css/normalize.css"}]
-             [:link {:rel :stylesheet :href "/css/remedy.css"}]
-             [:link {:rel :stylesheet :href "/css/utopia.css"}]
-             [:link {:rel :stylesheet :href "/css/fabricate.css"}]
-             [:title (:site.fabricate.document/title updated-entry)]]
+            (into (conj elements/html-head-defaults
+                        [:title (:site.fabricate.document/title updated-entry)])
+                  (-> updated-entry
+                      (select-keys [:site.fabricate.document/title
+                                    :site.fabricate.document/description])
+                      (clojure.set/rename-keys
+                       {:site.fabricate.document/title       :title
+                        :site.fabricate.document/description :description})
+                      elements/opengraph-metadata))
             [:body [:main attrs [:article {:class "u-grid-flex"} contents]]
              (elements/footer)]])))
 
@@ -286,26 +288,39 @@
 
 (defmethod api/build [:markdown/v0 :hiccup]
   [{source-location :site.fabricate.source/location :as entry} opts]
-  (let [[_div _attrs h1? & contents] (-> source-location
-                                         slurp
-                                         markdown/md->hiccup)
+  (let [{:keys [hiccup md/front-matter] :as entry-data} (-> source-location
+                                                            slurp
+                                                            markdown/md->hiccup)
+        [_div _attrs h1? & contents] hiccup
         h1          (if (and (vector? h1?) (= :h1 (first h1?)))
                       h1?
-                      [:h1 {} "Fabricate"])
-        title       (or (last h1))
+                      [:h1 {} "Fabricate: " (:title front-matter)])
+        title       (or (:title front-matter) (last h1))
         page-hiccup [:html
-                     [:head (conj elements/html-head-defaults [:title title])]
+                     [:head (conj elements/html-head-defaults [:title title])
+                      (elements/opengraph-metadata
+                       (select-keys front-matter
+                                    [:title :description :url :image]))]
                      [:body
                       [:main
                        (into [:article {:class "u-grid-flex md-page"}
                               (assoc-in h1 [1 :id] "top")]
                              contents)] (elements/footer)]]]
-    (assoc entry :site.fabricate.document/data page-hiccup)))
+    (merge entry
+           (-> front-matter
+               (select-keys [:title :description])
+               (clojure.set/rename-keys {:title :site.fabricate.document/title
+                                         :description
+                                         :site.fabricate.document/description}))
+           {:site.fabricate.document/data page-hiccup})))
 
 (comment
   (-> "docs/posts/2025-02-api-announcement.md"
       slurp
-      markdown/md->hiccup))
+      markdown/md->hiccup)
+  (-> "docs/posts/2025-02-api-announcement.md"
+      slurp
+      cybermonday.core/parse-md))
 
 
 (comment
