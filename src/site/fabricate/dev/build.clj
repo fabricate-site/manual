@@ -8,8 +8,8 @@
             [site.fabricate.prototype.read.grammar :as grammar]
             [site.fabricate.prototype.hiccup :as hiccup]
             [site.fabricate.prototype.html :as html]
-            [site.fabricate.prototype.source.clojure :as clj]
-            [site.fabricate.prototype.source.fabricate]
+            [site.fabricate.prototype.document.clojure :as clj]
+            [site.fabricate.prototype.document.fabricate :as fabricate]
             [site.fabricate.dev.source.markdown :as markdown]
             [garden.core :as garden]
             [garden.stylesheet :refer [at-import]]
@@ -19,9 +19,6 @@
             [dev.onionpancakes.chassis.core :as c]
             [clojure.string :as str]
             [clojure.java.io :as io]))
-
-
-
 
 (defn simple-expr
   "Takes a Clojure form and yields a string with the Fabricate template expression for that form."
@@ -202,12 +199,12 @@
 
 (defn clj-entry->hiccup
   [entry]
-  (let [[m_ attrs & contents :as main] (-> (:site.fabricate.source/location
-                                            entry)
-                                           (clj/file->forms)
-                                           (clj/eval-forms)
-                                           (clj/forms->hiccup))
-        ns-meta       (-> main
+  (let [[a_ attrs & contents :as article] (-> (:site.fabricate.source/location
+                                               entry)
+                                              (clj/read-forms)
+                                              (clj/eval-forms)
+                                              (clj/forms->hiccup))
+        ns-meta       (-> article
                           (get-in [1 :data-clojure-namespace])
                           (find-ns)
                           meta)
