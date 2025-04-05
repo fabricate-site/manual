@@ -233,15 +233,15 @@ https://huetone.ardov.me/?palette=N4IgdghgtgpiBcIBiEBGAnAlgYwgFzgBoQALAVxgGcEBtU
     /* Blues */
     --hue-blue: 240;
     --color-blue-L1: #e8f2fa; /* fallback value/guide */
-    --color-blue-L1: oklch(95.64% 0.0015 240);
+    --color-blue-L1: oklch(95.64% 0.015 240);
     --color-blue-L2: #b0d5f1; /* fallback value/guide */
     --color-blue-L2: oklch(85.58% 0.055 240);
     --color-blue-M1: #b0d5f1; /* fallback value/guide */
-    --color-blue-M1: oklch(85.58% 0.055 240);
+    --color-blue-M1: oklch(85.58% 0.1 240);
     --color-blue-M2: #3baff0; /* fallback value/guide */
-    --color-blue-M2: oklch(71.05% 0.014 240);
+    --color-blue-M2: oklch(71.05% 0.14 240);
     --color-blue-M3: #00a1ec; /* fallback value/guide */
-    --color-blue-M3: oklch(67.55% 0.016 240);
+    --color-blue-M3: oklch(67.55% 0.14 240);
     --color-blue-D1: #006291; /* fallback value/guide */
     --color-blue-D1: oklch(47.18% 0.225 240);
     --color-blue-D2: #001a2b; /* fallback value/guide */
@@ -443,7 +443,7 @@ dd p {
 }
 
 a {
-    color: var(--color-blue);
+    color: oklch(from var(--color-blue-D1) 38% 0.15 h);
     text-decoration: none;
 }
 
@@ -465,11 +465,34 @@ a {
 }
 
 :not(.code-big) .language-clojure.keyword {
-    color: var(--color-burntorange);
+    color: var(--color-orange-D1);
 }
-:not(.code-big) .language-clojure.symbol {
-    color: var(--color-darkgreen);
+:not(.code-big) .language-clojure.string {
+    color: var(--color-green-D1);
 }
+
+
+
+/* :not(.code-big) .language-clojure.symbol { */
+/*     color: var(--color-clay-D1); */
+/* } */
+
+/* function call: first symbol in a list */
+.paren-open + .symbol {
+    color: var(--color-blue-D2);
+}
+
+
+/* special symbols */
+:where(span[data-clojure-symbol="fn"]) {
+    color: var(--color-red-D1) !important;
+}
+:where(span[data-clojure-symbol^="def"]) {
+    color: var(--color-red-D1) !important;
+}
+
+
+
 
 p:empty {
     display: none;
@@ -571,7 +594,7 @@ footer {
     border-radius: var(--space-xs);
 }
 .multimethod-card .multimethod-identifiers {
-    background: var(--color-green);
+    background: var(--color-green-D1);
     color: var(--color-sand-L1);
     padding: var(--space-2xs);
     display: flex;
@@ -853,7 +876,7 @@ ol.api-toc {
     grid-column: 4 / -1;
     margin-left: 0em;
     background: var(--color-sand-L1);
-    color: var(--color-black);
+    color: var(--color-sand-D2);
     padding: 0.1em;
     padding-left: 0.25em;
 }
@@ -898,7 +921,7 @@ blockquote>p {
 }
 
 blockquote:nth-child(1) {
-    outline-color: var(--color-black);
+    outline-color: var(--color-sand-D2);
 }
 
 
@@ -993,6 +1016,10 @@ footer.main-footer {
     margin-bottom: 0.25em;
     margin-right: var(--grid-gutter);
     border-radius: var(--space-3xs);
+    background: var(--color-clay-D1);
+    color: var(--color-sand-L1);
+    /* letter-spacing: 0.02em; */
+    font-weight: 600;
 }
 
 footer a {
@@ -1002,24 +1029,22 @@ footer a {
 }
 
 footer .footer-home {
-    background: var(--color-green);
-    color: var(--color-sand-L1);
 }
 footer .footer-api {
-    background: var(--color-blue);
+    background: var(--color-clay-D1);
     color: var(--color-sand-L1);
 }
 footer .footer-namespaces {
-    background: var(--color-yellow);
+    background: var(--color-clay-D1);
     color: var(--color-sand-L1);
 }
 footer .footer-top {
-    background: var(--color-gray);
+    background: var(--color-clay-D1);
     color: var(--color-sand-L1);
 }
 
 footer .footer-github {
-    background: var(--color-darkbrown);
+    background: var(--color-clay-D1);
     color: var(--color-sand-L1);
 }
 
@@ -1036,7 +1061,7 @@ footer .footer-github {
 .fabricate-error h6 {
     grid-column: 1 / span 4;
     font-size: var(--step-2);
-    background: var(--color-burntorange);
+    background: var(--color-orange-D1);
     color: var(--color-sand-L1);
 }
 
@@ -1118,13 +1143,13 @@ pre.repl>code.clojure-result:before {
 }
 
 pre ins {
-    color: var(--color-darkgreen);
+    color: var(--color-green-D1);
     background: var(--color-clay);
     font-weight: 900;
 }
 pre ins:before {
     content: "+ ";
-    color: var(--color-black);
+    color: var(--color-sand-D2);
     background: var(--color-sand-L1);
 
 }
@@ -1146,7 +1171,7 @@ pre.fabricate-template {
   position: relative;
   padding-left: 1.5ch;
   margin-left: 1.5ch;
-  border-left: 0.15em solid var(--color-black);
+  border-left: 0.15em solid var(--color-sand-D2);
 }
 .tree ul li:before {
   position: absolute;
@@ -1155,7 +1180,7 @@ pre.fabricate-template {
   left: 0;
   content: "";
   width: 1ch;
-  border-bottom: 0.15em solid var(--color-black);
+  border-bottom: 0.15em solid var(--color-sand-D2);
 }
 .tree ul li:last-child {
   border-left: none;
@@ -1168,7 +1193,7 @@ pre.fabricate-template {
   left: 0;
   content: "";
   height: 0.7em;
-  border-left: 0.15em solid var(--color-black);
+  border-left: 0.15em solid var(--color-sand-D2);
 }
 
 .tree :where(h1,h2,h3,h4,h5,h6) {
