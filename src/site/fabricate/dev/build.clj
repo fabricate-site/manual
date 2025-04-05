@@ -246,8 +246,9 @@
         (elements/constants-dl ns-vars)]] (elements/footer)]]))
 
 (def doc-namespaces
-  '[site.fabricate.prototype.source.clojure
-    site.fabricate.prototype.source.fabricate site.fabricate.prototype.hiccup])
+  '[site.fabricate.prototype.document.clojure
+    site.fabricate.prototype.document.fabricate
+    site.fabricate.prototype.hiccup])
 
 
 (defmethod api/collect #'doc-namespaces

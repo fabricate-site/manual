@@ -6,6 +6,8 @@
    [site.fabricate.dev.styles :as styles]
    [site.fabricate.dev.elements :as elements]
    [site.fabricate.dev.build.utils :refer [expr->hiccup str->hiccup]]
+   [site.fabricate.source]
+   [site.fabricate.document]
    [site.fabricate.prototype.read]
    [site.fabricate.prototype.schema]
    [site.fabricate.prototype.hiccup])) 🔚
@@ -17,7 +19,7 @@
 
 
 [:header {:class "subgrid top" :style {:grid-column "1 / -1"
-                                       :background-color "var(--color-darkbrown)"
+                                       :background-color "var(--color-orange-D1)"
                                        :margin-top "var(--grid-gutter)"
                                        :margin-bottom "var(--space-l)"
                                        :border-radius "var(--space-2xs)"
@@ -171,6 +173,42 @@ The namespace descriptions, automatically generated from the namespace forms, in
             'site.fabricate.prototype.read
             'site.fabricate.prototype.read.grammar
             'site.fabricate.prototype.hiccup
-            'site.fabricate.prototype.source.clojure
+            'site.fabricate.prototype.document.clojure
             ]))
 🔚
+
+
+
+✳= [:ul {:class "tree main-track"} [:li [:h5 "site.fabricate"]]
+    [:li [:ul [:li [:h5 "api"]
+               (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.api))) (re-pattern "\n\\s+") " ")]
+          [:li [:h5 "source"]
+           (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.source))) (re-pattern "\n\\s+") " ")]
+          [:li [:h5 "document"]
+           (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.document))) (re-pattern "\n\\s+") " ")]
+          [:li [:h5 "page"]]
+          [:li [:h5 "prototype"]
+           [:ul
+            [:li [:h5 "source"]
+             [:ul
+              [:li [:h5 "clojure"] (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.source.clojure))) (re-pattern "\n\\s+") " ")]
+              [:li [:h5 "fabricate"]
+               (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.source.fabricate))) (re-pattern "\n\\s+") " ")
+               ]]]
+            [:li [:h5 "document"]
+             [:ul
+              [:li [:h5 "clojure"]
+               (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.document.clojure))) (re-pattern "\n\\s+") " ")
+]
+              [:li [:h5 "fabricate"]
+(clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.document.fabricate))) (re-pattern "\n\\s+") " ")
+]]]
+            [:li [:h5 "read"]
+             (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.read))) (re-pattern "\n\\s+") " ")
+             [:ul
+              [:li [:h5 "grammar"]
+               (clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.read.grammar))) (re-pattern "\n\\s+") " ")
+               ]]]
+            [:li [:h5 "schema"]
+(clojure.string/replace (:doc (meta (find-ns 'site.fabricate.prototype.schema))) (re-pattern "\n\\s+") " ")
+]]]]]] 🔚
