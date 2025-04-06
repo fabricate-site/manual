@@ -93,7 +93,7 @@
   (let [d "html"] {:site.fabricate.page/publish-dir d}))
 
 
-(defmethod api/collect "docs/**.fab"
+(defmethod api/collect "*/**.fab"
   [src options]
   (mapv (fn path->entry [p]
           {:site.fabricate.source/format   :site.fabricate.read/v0
@@ -386,7 +386,21 @@
         (assoc :site.fabricate.page/output output-file
                :site.fabricate.page/format :html))))
 
-(defmethod api/produce! [:hiccup :html] [entry opts] (hiccup->html entry opts))
+(defmethod api/produce! [:hiccup :html]
+  [entry opts]
+  (try (hiccup->html entry opts)
+       (catch Exception e
+         (throw (ex-info (str "Error building page "
+                              (:site.fabricate.source/location entry))
+                         (merge (Throwable->map e)
+                                (select-keys
+                                 entry
+                                 [:site.fabricate.source/location
+                                  :site.fabricate.source/format
+                                  :site.fabricate.api/source
+                                  :site.fabricate.page/location
+                                  :site.fabricate.page/format])))))))
+
 
 (defmethod api/produce! [:markdown :markdown]
   [entry _opts]
