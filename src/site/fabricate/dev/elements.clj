@@ -218,3 +218,34 @@
               (list [:meta {:property (str "og:" k) :content v}]
                     [:meta {:property (str "twitter:" k) :content v}])))
    (merge opengraph-defaults data)))
+
+(def key-links
+  [{:url "/" :title "Home" :description "Main page for Fabricate's manual"}
+   {:url         "/reference/intro.html"
+    :title       "Intro"
+    :description "Introduction to Fabricate"}
+   {:url         "/guides.html"
+    :title       "Guides"
+    :description "Guides on how to use Fabricate"}
+   {:url "/api.html" :title "API" :description "Fabricate's API"}
+   {:url         "https://github.com/fabricate-site/fabricate"
+    :title       "GitHub"
+    :description "GitHub repo"}])
+
+(def logotype
+  [:div {:class "logotype"}
+   [:img {:class "logo" :src "/media/fabricate-logo-v1.svg"}]
+   [:div {:class "wordmark"} "Fabricate"]
+   [:q {:class "tagline"} "Form by art and labor"]])
+
+
+(def site-header
+  "Header for Fabricate's index page"
+  [:header {:id "site-header"} (assoc-in logotype [3 0] :h1)
+   [:span {:class "primary-description"}
+    "Build websites with the full power of Clojure"]
+   (->> key-links
+        (drop 1)
+        (map (fn [{:keys [url title description]}]
+               [:a {:href url :aria-description description} title]))
+        (into [:nav {:class "key-links"}]))])

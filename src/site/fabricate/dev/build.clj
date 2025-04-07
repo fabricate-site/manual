@@ -11,6 +11,7 @@
             [site.fabricate.prototype.document.clojure :as clj]
             [site.fabricate.prototype.document.fabricate :as fabricate]
             [site.fabricate.dev.source.markdown :as markdown]
+            [site.fabricate.dev.git :as git]
             [garden.core :as garden]
             [garden.stylesheet :refer [at-import]]
             [rewrite-clj.zip :as z]
@@ -94,35 +95,40 @@
 
 
 (defmethod api/collect "*/**.fab"
-  [src options]
+  [src _options]
   (mapv (fn path->entry [p]
-          {:site.fabricate.source/format   :site.fabricate.read/v0
-           :site.fabricate.document/format :hiccup
-           :site.fabricate.source/location (fs/file p)
-           :site.fabricate.api/source      src
-           :site.fabricate.source/created  (time/file-created p)
-           :site.fabricate.source/modified (time/file-modified p)
-           ;; multi-outputs are superfluous; this should be replaced with a
-           ;; call to mapcat
-           :site.fabricate.page/outputs    [{:site.fabricate.page/format :html
-                                             :site.fabricate.page/location
-                                             (fs/file
-                                              (:site.fabricate.page/publish-dir
-                                               options))}]})
+          (merge (git/info (str p))
+                 {:site.fabricate.source/format :site.fabricate.read/v0
+                  :site.fabricate.document/format :hiccup
+                  :site.fabricate.source/location (fs/file p)
+                  :site.fabricate.api/source src
+                  :site.fabricate.source/created (time/file-created p)
+                  :site.fabricate.source/modified (time/file-modified p)
+                  :site.fabricate.page/format :html
+                  :site.fabricate.page/location
+                  (fs/file (:site.fabricate.page/publish-dir options))}))
         (fs/glob (System/getProperty "user.dir") src)))
+
+(comment
+  (->> (api/collect "*/**.fab" {})
+       (filter (fn [entry]
+                 (re-find #"index"
+                          (str (:site.fabricate.source/location entry)))))
+       (first)
+       (#(api/build % {}))
+       #_(#(api/produce! % {}))))
 
 (defmethod api/collect "docs/**.clj"
   [src {:keys [site.fabricate.page/publish-dir] :as opts}]
   (mapv (fn path->entry [p]
-          {:site.fabricate.source/format   :clojure/v0
-           :site.fabricate.document/format :hiccup
-           :site.fabricate.source/location (fs/file (fs/cwd) p)
-           :site.fabricate.page/outputs    [{:site.fabricate.page/format :html
-                                             :site.fabricate.page/location
-                                             (fs/file publish-dir)}]
-           :site.fabricate.api/source      src
-           :site.fabricate.source/created  (time/file-created p)
-           :site.fabricate.source/modified (time/file-modified p)})
+          (merge (git/info (str p))
+                 {:site.fabricate.source/format   :clojure/v0
+                  :site.fabricate.document/format :hiccup
+                  :site.fabricate.source/location (fs/file (fs/cwd) p)
+                  :site.fabricate.page/location   (fs/file publish-dir)
+                  :site.fabricate.api/source      src
+                  :site.fabricate.source/created  (time/file-created p)
+                  :site.fabricate.source/modified (time/file-modified p)}))
         (fs/glob "." src)))
 
 (comment
@@ -184,6 +190,7 @@
 
 (defmethod api/build [:site.fabricate.read/v0 :hiccup]
   ([{loc :site.fabricate.source/location :as entry} _opts]
+   (println "parsing fabricate template at" (str loc))
    (try (fabricate-v0->hiccup entry)
         (catch Exception ex
           (throw (ex-info (ex-message ex)
@@ -254,16 +261,15 @@
 (defmethod api/collect #'doc-namespaces
   [ns-syms {:keys [site.fabricate.page/publish-dir] :as opts}]
   (mapv (fn [ns-sym]
-          {:site.fabricate.source/format :clojure.namespace/v0
-           :site.fabricate.document/format :hiccup
-           :site.fabricate.source/location
-           (fs/file (fs/cwd) (str "docs/reference/namespaces/" ns-sym ".clj"))
-           :site.fabricate.page/format :html
-           :site.fabricate.page/location "html"
-           :site.fabricate.page/outputs [{:site.fabricate.page/format :html
-                                          :site.fabricate.page/location
-                                          (fs/file publish-dir)}]
-           :clojure/namespace ns-sym})
+          (merge
+           (git/info *file*)
+           {:site.fabricate.source/format :clojure.namespace/v0
+            :site.fabricate.document/format :hiccup
+            :site.fabricate.source/location
+            (fs/file (fs/cwd) (str "docs/reference/namespaces/" ns-sym ".clj"))
+            :site.fabricate.page/format :html
+            :site.fabricate.page/location (fs/file publish-dir)
+            :clojure/namespace ns-sym}))
         doc-namespaces))
 
 (defmethod api/build [:clojure.namespace/v0 :hiccup]
@@ -273,14 +279,12 @@
 (defmethod api/collect "docs/posts/*.md"
   [glob {:keys [site.fabricate.page/publish-dir :as opts]}]
   (mapv (fn [src-loc]
-          {:site.fabricate.source/format   :markdown/v0
-           :site.fabricate.document/format :hiccup
-           :site.fabricate.source/location (fs/file src-loc)
-           :site.fabricate.page/format     :html
-           :site.fabricate.page/location   "html"
-           :site.fabricate.page/outputs    [{:site.fabricate.page/format :html
-                                             :site.fabricate.page/location
-                                             (fs/file publish-dir)}]})
+          (merge (git/info (str src-loc))
+                 {:site.fabricate.source/format   :markdown/v0
+                  :site.fabricate.document/format :hiccup
+                  :site.fabricate.source/location (fs/file src-loc)
+                  :site.fabricate.page/format     :html
+                  :site.fabricate.page/location   (fs/file publish-dir)}))
         (fs/glob (System/getProperty "user.dir") glob)))
 
 (defmethod api/build [:markdown/v0 :hiccup]
@@ -371,13 +375,15 @@
   (output-path "docs/design/utopia.clj" "html"))
 
 (defn hiccup->html
-  [{source-location :site.fabricate.source/location :as entry} _opts]
+  [{source-location :site.fabricate.source/location
+    page-location :site.fabricate.page/location
+    :as entry} _opts]
   (let [output-file
         (fs/file (str (output-path
                        (if (= "fab" (fs/extension source-location))
                          (fs/strip-ext (fs/strip-ext source-location))
                          (fs/strip-ext (:site.fabricate.source/location entry)))
-                       (:site.fabricate.page/location entry))
+                       page-location)
                       ".html"))]
     (println "writing output to" (str output-file))
     (write-hiccup-html! (:site.fabricate.document/data entry) output-file)
