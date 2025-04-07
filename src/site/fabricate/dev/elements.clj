@@ -243,9 +243,33 @@
   "Header for Fabricate's index page"
   [:header {:id "site-header"} (assoc-in logotype [3 0] :h1)
    [:span {:class "primary-description"}
-    "Build websites with the full power of Clojure"]
+    "Build static websites with the full power of Clojure"]
    (->> key-links
         (drop 1)
         (map (fn [{:keys [url title description]}]
                [:a {:href url :aria-description description} title]))
         (into [:nav {:class "key-links"}]))])
+
+
+(def simple-demo
+  [:div {:id "simple" :class "keyword-demo"} [:h3 "Simple"]
+   [:p "Fabricate's API provides 3 clear steps to build a website."]
+   [:pre {:class "api-demo"}
+    [:code {:class "language-clojure"}
+     (adorn/clj->hiccup
+      "(->> {}
+     api/plan!
+     api/assemble
+     api/construct!)")]]])
+
+(def versatile-demo
+  [:div {:id "versatile" :class "keyword-demo"} [:h3 "Versatile"]
+   [:p
+    "You can easily extend Fabricate's build process to new types of data and new ways of generating pages."]
+   [:pre {:class "api-demo"}
+    [:code {:class "language-clojure"}
+     (adorn/clj->hiccup '(defmethod
+                          api/build
+                          [:markdown :hiccup]
+                          [entry options]
+                          (md-to-hiccup entry options)))]]])

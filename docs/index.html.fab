@@ -12,13 +12,15 @@
    [site.fabricate.prototype.schema]
    [site.fabricate.prototype.hiccup])) 🔚
 ✳(def metadata {:title "Fabricate"} )🔚
-✳= nil #_elements/header-big 🔚
-
 
 ✳= elements/site-header 🔚
 
-Introducing ✳=[:a {:href "https://github.com/fabricate-site/fabricate"} "Fabricate"]🔚, a Clojure library for making static websites, using Clojure.
+Fabricate is a Clojure library for generating static websites that is ✳= [:strong "simple, versatile, and under your control."] 🔚 
 
+✳= elements/simple-demo 🔚
+
+
+✳= elements/versatile-demo 🔚
 Fabricate gives you something other tools don't: the power to evaluate Clojure code to generate the contents of a page. The “using Clojure” part of that first sentence contains the core idea: Fabricate is built on the idea that you should be able to use Clojure to generate as much (or little) of your website as is necessary. 
 
 What does that look like?
