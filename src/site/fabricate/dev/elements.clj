@@ -205,7 +205,7 @@
 
 (def opengraph-defaults
   {:title       "Fabricate"
-   :description "Simple, flexible website generation with Clojure"
+   :description "Build static websites with the full power of Clojure"
    :image       "https://fabricate.site/media/logotype-v1.png"})
 
 (defn opengraph-metadata
@@ -265,11 +265,23 @@
 (def versatile-demo
   [:div {:id "versatile" :class "keyword-demo"} [:h3 "Versatile"]
    [:p
-    "You can easily extend Fabricate's build process to new types of data and new ways of generating pages."]
+    "You can easily extend Fabricate's build process to new sources of data and new ways of building pages."]
    [:pre {:class "api-demo"}
     [:code {:class "language-clojure"}
-     (adorn/clj->hiccup '(defmethod
-                          api/build
-                          [:markdown :hiccup]
-                          [entry options]
-                          (md-to-hiccup entry options)))]]])
+     (utils/expr->hiccup '(defmethod
+                           api/build
+                           [:markdown :hiccup]
+                           [entry options]
+                           (md-to-hiccup entry options))
+                         {:width 30})]]])
+
+(def control-demo
+  [:div {:id "under-your-control" :class "keyword-demo"}
+   [:h3 "Under your control"]
+   [:p
+    "Fabricate lets you augment your writing with Clojure: you can evaluate code within a page."]
+   [:pre {:class "api-demo"}
+    [:code {:class "language-clojure"}
+     (utils/str->hiccup "^{:kindly/kind :kind/hiccup}
+[:h1 (:title metadata)]"
+                        {:width 30})]]])
