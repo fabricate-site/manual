@@ -126,6 +126,7 @@
                   :site.fabricate.document/format :hiccup
                   :site.fabricate.source/location (fs/file (fs/cwd) p)
                   :site.fabricate.page/location   (fs/file publish-dir)
+                  :site.fabricate.page/format     :html
                   :site.fabricate.api/source      src
                   :site.fabricate.source/created  (time/file-created p)
                   :site.fabricate.source/modified (time/file-modified p)}))
