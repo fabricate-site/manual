@@ -171,7 +171,7 @@
                     [:dd [:code (adorn/clj->hiccup (type (var-get v)))]]]]))
                [:dl {:class "var-list u-grid-flex"}])))
 
-(defn breakup-sym [sym] (interpose [:wbr] (str/split (str sym) #"(?<=\.)")))
+(defn breakup-sym [sym] (interpose [:wbr] (str/split (str sym) #"(?<=[./])")))
 
 (defn ns-header
   [nmspc]
@@ -285,3 +285,97 @@
      (utils/str->hiccup "^{:kindly/kind :kind/hiccup}
 [:h1 (:title metadata)]"
                         {:width 30})]]])
+
+
+(def namespace-tree
+  [:ul {:class "tree main-track" :id "namespace-tree"}
+   [:li [:h5 "site.fabricate"]]
+   [:li
+    [:ul
+     [:li [:h5 "api"]
+      (str/replace (:doc (meta (find-ns 'site.fabricate.api)))
+                   (re-pattern "\n\\s+")
+                   " ")]
+     [:li [:h5 "source"]
+      (str/replace (:doc (meta (find-ns 'site.fabricate.source)))
+                   (re-pattern "\n\\s+")
+                   " ")]
+     [:li [:h5 "document"]
+      (str/replace (:doc (meta (find-ns 'site.fabricate.document)))
+                   (re-pattern "\n\\s+")
+                   " ")] [:li [:h5 "page"]]
+     [:li [:h5 "prototype"]
+      [:ul
+       [:li [:h5 "source"]
+        [:ul
+         [:li [:h5 "clojure"]
+          (str/replace (:doc (meta (find-ns
+                                    'site.fabricate.prototype.source.clojure)))
+                       (re-pattern "\n\\s+")
+                       " ")]
+         [:li [:h5 "fabricate"]
+          (str/replace
+           (:doc (meta (find-ns 'site.fabricate.prototype.source.fabricate)))
+           (re-pattern "\n\\s+")
+           " ")]]]
+       [:li [:h5 "document"]
+        [:ul
+         [:li [:h5 "clojure"]
+          (str/replace
+           (:doc (meta (find-ns 'site.fabricate.prototype.document.clojure)))
+           (re-pattern "\n\\s+")
+           " ")]
+         [:li [:h5 "fabricate"]
+          (str/replace
+           (:doc (meta (find-ns 'site.fabricate.prototype.document.fabricate)))
+           (re-pattern "\n\\s+")
+           " ")]]]
+       [:li [:h5 "read"]
+        (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.read)))
+                     (re-pattern "\n\\s+")
+                     " ")
+        [:ul
+         [:li [:h5 "grammar"]
+          (str/replace (:doc (meta (find-ns
+                                    'site.fabricate.prototype.read.grammar)))
+                       (re-pattern "\n\\s+")
+                       " ")]]]
+       [:li [:h5 "schema"]
+        (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.schema)))
+                     (re-pattern "\n\\s+")
+                     " ")]]]]]])
+
+
+
+;; TODO: figure out how to present namespace symbols in an enumerated order
+(defn ns-sym-table
+  [ns-vars]
+  (into [:ul {:class "ns-toc"}]
+        (map (fn [[sym ns-var]]
+               (let [fqs (symbol ns-var)]
+                 [:li {:class "ns-toc-entry"}
+                  [:a {:href (str "#" fqs) :class "ns-link"}
+                   (breakup-sym sym)]]))
+             ns-vars)))
+
+(defn document-var
+  [ns-var]
+  (let [var-sym  (symbol ns-var)
+        var-meta (meta ns-var)]
+    [:div {:class "var-documentation" :id (str var-sym)} [:h4 (name var-sym)]
+     [:code {:class "var-fully-qualified-name"} (breakup-sym var-sym)]
+     [:p {:class "var-description"} (:doc var-meta)]]))
+
+(comment
+  (document-var #'site.fabricate.api/assemble))
+
+(defn ns-doc
+  "Generate documentation from the datafied representation of the namespace"
+  [{nmspc-name :name vars :publics :as datafied-ns}]
+  (let [nmspc   (:clojure.datafy/obj (meta datafied-ns))
+        ns-meta (meta nmspc)]
+    (list [:h2 {:class "ns-name" :id (str nmspc-name)} (breakup-sym nmspc-name)]
+          [:p {:class "ns-description"} (:doc ns-meta)]
+          (ns-sym-table vars)
+          (into [:div {:class "var-descriptions"}]
+                (map (fn [[_ ns-var]] (document-var ns-var)) vars)))))

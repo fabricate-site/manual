@@ -1325,3 +1325,63 @@ pre.fabricate-template {
 .keyword-demo > pre.api-demo span[data-clojure-symbol^="api/"] {
     font-weight: 900;
 }
+
+
+.ns-sections, .ns-section {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.ns-section {
+    margin-bottom: var(--space-2xl);
+}
+
+.ns-section > h2 {
+    grid-column: 1 / -1;
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3xs);
+}
+.ns-section p.ns-description {
+    grid-column: 1 / -1;
+    margin: 0em;
+    margin-bottom: var(--space-xs);
+    max-width: 65ch;
+}
+
+.ns-section .ns-toc {
+    grid-column: 1 / -1;
+    columns: var(--space-4xl) auto;
+}
+
+
+ul.ns-toc {
+    margin: 0em;
+    padding-left: 0em;
+}
+
+li.ns-toc-entry {
+    list-style-type: none;
+    /* font-family: var(--font-mono); */
+    font-weight: 600;
+    font-size: var(--step--1);
+}
+
+.var-descriptions, .var-documentation {
+    grid-column: 1 / -1;
+}
+
+.var-documentation>h4 {
+    font-size: var(--step-1);
+    font-weight: 700;
+    margin-bottom: var(--space-3xs);
+}
+
+.var-descriptions .var-fully-qualified-name {
+    font-size: var(--step--1);
+}
+
+p.var-description {
+    margin-top: var(--space-2xs);
+    margin-bottom: var(--space-m);
+}
