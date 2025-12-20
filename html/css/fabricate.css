@@ -1358,6 +1358,7 @@ pre.fabricate-template {
 ul.ns-toc {
     margin: 0em;
     padding-left: 0em;
+    margin-bottom: var(--space-m);
 }
 
 li.ns-toc-entry {
@@ -1371,17 +1372,73 @@ li.ns-toc-entry {
     grid-column: 1 / -1;
 }
 
+.var-documentation {
+    --gap: max(2px, calc(var(--space-3xs) / 3));
+    border: var(--gap) solid var(--color-black);
+    margin-bottom: var(--space-l);
+}
+
 .var-documentation>h4 {
     font-size: var(--step-1);
     font-weight: 700;
-    margin-bottom: var(--space-3xs);
+    margin-bottom: 0em;
+    margin-top: var(--space-3xs);
+    margin-left: var(--space-3xs);
+    margin-right: var(--space-3xs);
 }
 
 .var-descriptions .var-fully-qualified-name {
-    font-size: var(--step--1);
+    font-size: var(--step--2);
+    padding-left: var(--space-3xs);
+    padding-right: var(--space-3xs);
+
+
+    /* padding-bottom: var(--space-3xs); */
+    /* border-bottom: var(--space-3xs) solid var(--color-blue-D1); */
 }
 
 p.var-description {
     margin-top: var(--space-2xs);
     margin-bottom: var(--space-m);
+    margin-left: var(--space-3xs);
+    margin-right: var(--space-3xs);
+    max-width: 45ch;
+}
+
+dl.var-props {
+    margin-top: var(--space-2xs);
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: var(--space-3xl) auto;
+    grid-column-gap: var(--gap);
+    grid-row-gap: var(--gap);
+    background: var(--color-black);
+    border-top: var(--gap) solid var(--color-black);
+    /* border-bottom: var(--gap) solid var(--color-black); */
+}
+dl.var-props > * {
+    padding: var(--space-3xs);
+}
+
+dl.var-props>dt {
+    font-family: var(--display-sans);
+    font-weight: 500;
+    grid-column: 1 / 2;
+    background: var(--color-sand-L1);
+}
+dl.var-props>dd {
+    grid-column: 2 / 3;
+    background: var(--color-sand-L1);
+    max-width: 100%;
+}
+
+
+
+dd.var-source {
+    font-size: var(--step--1);
+}
+
+.language-clojure.whitespace {
+    display: inline-block;
+    width: 1ch;
 }

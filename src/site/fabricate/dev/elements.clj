@@ -4,6 +4,7 @@
             [site.fabricate.adorn :as adorn]
             [site.fabricate.prototype.read.grammar :as grammar]
             [site.fabricate.dev.build.utils :as utils]
+            [malli.dev.pretty]
             [clojure.string :as str]))
 
 (defn footer
@@ -47,7 +48,8 @@
 (comment
   (c/escape-attribute-value (str (symbol (resolve 'anchor))))
   (symbol #'c/escape-attribute-value)
-  (meta #'site.fabricate.api/plan!))
+  (malli.dev.pretty/-printer)
+  (println (:malli/schema (meta #'site.fabricate.api/plan!))))
 
 
 
@@ -357,16 +359,54 @@
                   [:a {:href (str "#" fqs) :class "ns-link"}
                    (breakup-sym sym)]]))
              ns-vars)))
+(comment
+  (type (var-get #'site.fabricate.api/plan!))
+  (fn? (var-get #'site.fabricate.api/plan!))
+  (type (var-get #'site.fabricate.api/glossary))
+  (instance? clojure.lang.MultiFn (type (var-get #'site.fabricate.api/build)))
+  (= clojure.lang.MultiFn (type (var-get #'site.fabricate.api/build))))
+
+(defn var-type
+  [ns-var]
+  (let [var-value (var-get ns-var)
+        var-type  (type var-value)]
+    (cond (fn? var-value) :function
+          (= clojure.lang.MultiFn var-type) :multimethod
+          :default        :constant)))
+
+(def type-descriptions
+  {:constant "Constant" :multimethod "Multimethod" :function "Function"})
+
 
 (defn document-var
   [ns-var]
-  (let [var-sym  (symbol ns-var)
-        var-meta (meta ns-var)]
+  (let [var-sym     (symbol ns-var)
+        var-meta    (meta ns-var)
+        ns-var-type (var-type ns-var)]
     [:div {:class "var-documentation" :id (str var-sym)} [:h4 (name var-sym)]
      [:code {:class "var-fully-qualified-name"} (breakup-sym var-sym)]
-     [:p {:class "var-description"} (:doc var-meta)]]))
+     [:p {:class "var-description"} (:doc var-meta)]
+     [:dl {:class "var-props"} [:dt "Type"]
+      [:dd {:class "var-description"} (type-descriptions ns-var-type)]
+      (when (and (= :function) (:arglists var-meta))
+        ns-var-type
+        (list [:dt "Arguments"]
+              [:dd
+               [:code {:class "language-clojure"}
+                (let [args (:arglists var-meta)]
+                  (if (= 1 (count args))
+                    (utils/expr->hiccup (first args))
+                    (utils/expr->hiccup args)))
+                #_(->> (:arglists var-meta)
+                       (apply concat)
+                       (map (fn [i] [:li (utils/expr->hiccup i)]))
+                       (into [:ol]))]]))
+      ;; TODO: legibly display schemas
+      #_(when (:malli/schema var-meta) (list [:dt "Schema"] [:dd]))
+      [:dt "Source"] [:dd {:class "var-source"} [:code (:file var-meta)]]]]))
 
 (comment
+  #'site.fabricate.api/build
   (document-var #'site.fabricate.api/assemble))
 
 (defn ns-doc
