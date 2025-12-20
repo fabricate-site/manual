@@ -35,9 +35,9 @@
            site.fabricate/fabricate
            {:git/sha
             ;; main
-            "b7265062d573430edf5adce09fd197b991cd962b"
+            #_"b7265062d573430edf5adce09fd197b991cd962b"
             ;; branch
-            #_"93f660bb19ac935e3e5f5ef1f75ed028973a9f2d"
+            "87dd4921dc339d768ebe8083f5921a123cce1654"
             :git/url "https://github.com/fabricate-site/fabricate"}
            #_{:local/root "../fabricate"}
            zprint/zprint {:mvn/version "1.2.9"}}
