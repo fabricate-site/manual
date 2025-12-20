@@ -155,8 +155,6 @@
                                                options)
                                               "/README.md"))}]}])
 
-(comment
-  (hiccup/doc-header {}))
 
 (defn fabricate-v0->hiccup
   "Generate a Hiccup representation of the page by evaluating the parsed Fabricate template of the page contents."
@@ -418,6 +416,14 @@
     (assoc entry :site.fabricate.page/output output-file)))
 
 (def setup-tasks [create-publish-dirs! get-css! copy-fonts!])
+
+(defn exec
+  [opts]
+  (do (->> {:site.fabricate.api/options site.fabricate.dev.build/options}
+           (#'site.fabricate.api/plan! site.fabricate.dev.build/setup-tasks)
+           (#'site.fabricate.api/assemble [])
+           (#'site.fabricate.api/construct! []))
+      :done))
 
 (comment
   ;; it's hard to beat this simplicity. also, a point in favor of the

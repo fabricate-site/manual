@@ -46,6 +46,7 @@
   (let [resolved (resolve sym)]))
 
 (comment
+  (dev.onionpancakes.chassis.core/html (utils/expr->hiccup [:a {:b :c}]))
   (c/escape-attribute-value (str (symbol (resolve 'anchor))))
   (symbol #'c/escape-attribute-value)
   (malli.dev.pretty/-printer)
@@ -182,12 +183,12 @@
     [:span {:class "ns-annotation"} "Namespace"]]
    [:p {:class "ns-description"} (:doc (meta nmspc))]])
 
-(ns-name (find-ns 'site.fabricate.api))
 
 (def html-head-defaults
   [:head [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
    [:meta {:http-equiv "X-UA-Compatible" :content "IE-edge"}]
+   [:link {:rel "shortcut icon" :href "favicon.svg" :type "image/svg"}]
    [:link {:rel :stylesheet :href "/css/normalize.css"}]
    [:link {:rel :stylesheet :href "/css/remedy.css"}]
    [:link {:rel :stylesheet :href "/css/utopia.css"}]
@@ -290,62 +291,64 @@
 
 
 (def namespace-tree
-  [:ul {:class "tree main-track" :id "namespace-tree"}
-   [:li [:h5 "site.fabricate"]]
-   [:li
-    [:ul
-     [:li [:h5 "api"]
-      (str/replace (:doc (meta (find-ns 'site.fabricate.api)))
-                   (re-pattern "\n\\s+")
-                   " ")]
-     [:li [:h5 "source"]
-      (str/replace (:doc (meta (find-ns 'site.fabricate.source)))
-                   (re-pattern "\n\\s+")
-                   " ")]
-     [:li [:h5 "document"]
-      (str/replace (:doc (meta (find-ns 'site.fabricate.document)))
-                   (re-pattern "\n\\s+")
-                   " ")] [:li [:h5 "page"]]
-     [:li [:h5 "prototype"]
+  [:ul]
+  #_[:ul {:class "tree main-track" :id "namespace-tree"}
+     [:li [:h5 "site.fabricate"]]
+     [:li
       [:ul
+       [:li [:h5 "api"]
+        (str/replace (:doc (meta (find-ns 'site.fabricate.api)))
+                     (re-pattern "\n\\s+")
+                     " ")]
        [:li [:h5 "source"]
-        [:ul
-         [:li [:h5 "clojure"]
-          (str/replace (:doc (meta (find-ns
-                                    'site.fabricate.prototype.source.clojure)))
-                       (re-pattern "\n\\s+")
-                       " ")]
-         [:li [:h5 "fabricate"]
-          (str/replace
-           (:doc (meta (find-ns 'site.fabricate.prototype.source.fabricate)))
-           (re-pattern "\n\\s+")
-           " ")]]]
+        (str/replace (:doc (meta (find-ns 'site.fabricate.source)))
+                     (re-pattern "\n\\s+")
+                     " ")]
        [:li [:h5 "document"]
-        [:ul
-         [:li [:h5 "clojure"]
-          (str/replace
-           (:doc (meta (find-ns 'site.fabricate.prototype.document.clojure)))
-           (re-pattern "\n\\s+")
-           " ")]
-         [:li [:h5 "fabricate"]
-          (str/replace
-           (:doc (meta (find-ns 'site.fabricate.prototype.document.fabricate)))
-           (re-pattern "\n\\s+")
-           " ")]]]
-       [:li [:h5 "read"]
-        (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.read)))
+        (str/replace (:doc (meta (find-ns 'site.fabricate.document)))
                      (re-pattern "\n\\s+")
-                     " ")
+                     " ")] [:li [:h5 "page"]]
+       [:li [:h5 "prototype"]
         [:ul
-         [:li [:h5 "grammar"]
-          (str/replace (:doc (meta (find-ns
-                                    'site.fabricate.prototype.read.grammar)))
+         [:li [:h5 "source"]
+          [:ul
+           [:li [:h5 "clojure"]
+            (str/replace
+             (:doc (meta (find-ns 'site.fabricate.prototype.source.clojure)))
+             (re-pattern "\n\\s+")
+             " ")]
+           [:li [:h5 "fabricate"]
+            (str/replace
+             (:doc (meta (find-ns 'site.fabricate.prototype.source.fabricate)))
+             (re-pattern "\n\\s+")
+             " ")]]]
+         [:li [:h5 "document"]
+          [:ul
+           [:li [:h5 "clojure"]
+            (str/replace
+             (:doc (meta (find-ns 'site.fabricate.prototype.document.clojure)))
+             (re-pattern "\n\\s+")
+             " ")]
+           [:li [:h5 "fabricate"]
+            (str/replace (:doc (meta
+                                (find-ns
+                                 'site.fabricate.prototype.document.fabricate)))
+                         (re-pattern "\n\\s+")
+                         " ")]]]
+         [:li [:h5 "read"]
+          (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.read)))
                        (re-pattern "\n\\s+")
-                       " ")]]]
-       [:li [:h5 "schema"]
-        (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.schema)))
-                     (re-pattern "\n\\s+")
-                     " ")]]]]]])
+                       " ")
+          [:ul
+           [:li [:h5 "grammar"]
+            (str/replace (:doc (meta (find-ns
+                                      'site.fabricate.prototype.read.grammar)))
+                         (re-pattern "\n\\s+")
+                         " ")]]]
+         [:li [:h5 "schema"]
+          (str/replace (:doc (meta (find-ns 'site.fabricate.prototype.schema)))
+                       (re-pattern "\n\\s+")
+                       " ")]]]]]])
 
 
 
