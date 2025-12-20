@@ -75,18 +75,18 @@
 
 (defn copy-fonts!
   [{:keys [site.fabricate.api/options] :as site}]
-  (let [{:keys [site.fabricate.page/publish-dir]} options
-        font-dir (System/getProperty "user.font-dir")
-        fonts    (reduce
-                  (fn [fonts path] (conj fonts {:src "" :file ""}))
-                  [{:src
-                    (fs/file
-                     font-dir
-                     "CommitMono-stdV142-design/CommitMono VariableFont.woff2")
-                    :file "html/fonts/CommitMono VariableFont.woff2"}]
-                  (fs/glob (fs/path font-dir "Lapidar0.3") "*.woff2"))]
-    (doseq [{:keys [src file]} fonts]
-      (when-not (fs/exists? file) (fs/copy src file)))
+  (let [{:keys [site.fabricate.page/publish-dir]} options]
+    (when-let [font-dir (System/getProperty "user.font-dir")]
+      (let [fonts (reduce
+                   (fn [fonts path] (conj fonts {:src "" :file ""}))
+                   [{:src
+                     (fs/file
+                      font-dir
+                      "CommitMono-stdV142-design/CommitMono VariableFont.woff2")
+                     :file "html/fonts/CommitMono VariableFont.woff2"}]
+                   (fs/glob (fs/path font-dir "Lapidar0.3") "*.woff2"))]
+        (doseq [{:keys [src file]} fonts]
+          (when-not (fs/exists? file) (fs/copy src file)))))
     site))
 
 (def options
