@@ -33,7 +33,11 @@
            garden/garden {:mvn/version "1.3.10"}
            juxt/dirwatch {:mvn/version "0.2.5"}
            site.fabricate/fabricate
-           {:git/sha "22772425b5276b92e220175406336793932d8016"
+           {:git/sha
+            ;; main
+            "b7265062d573430edf5adce09fd197b991cd962b"
+            ;; branch
+            #_"93f660bb19ac935e3e5f5ef1f75ed028973a9f2d"
             :git/url "https://github.com/fabricate-site/fabricate"}
            #_{:local/root "../fabricate"}
            zprint/zprint {:mvn/version "1.2.9"}}
