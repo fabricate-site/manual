@@ -20,7 +20,11 @@
                       (#'site.fabricate.api/construct! []))
                  :done))))
   (t/testing "Properties of build steps:"
-    (let [post-plan (#'site.fabricate.api/plan! build/setup-tasks test-site)]
+    (let [post-plan      (#'site.fabricate.api/plan!
+                          build/setup-tasks
+                          test-site)
+          post-assemble  (#'site.fabricate.api/assemble [] post-plan)
+          post-construct (#'site.fabricate.api/construct! [] post-assemble)]
       (t/testing "plan"
         (t/is
          (match? (match/seq-of
@@ -29,12 +33,11 @@
                    :git/file-path (match/pred string?)})
                  (:site.fabricate.api/entries post-plan))
          "Every collected entry should have a source location, repo-relative, and absolute file path."))
-      (let [post-assemble (#'site.fabricate.api/assemble [] post-plan)]
-        (t/testing "assemble"
-          (t/is
-           (match? post-plan post-assemble)
-           "No entry should contain less information after assemble than before")))
+      (t/testing "assemble"
+        (t/is
+         (match? post-plan post-assemble)
+         "No entry should contain less information after assemble than before"))
       (t/testing "construct!"
         (t/is
-         false
+         (match? post-assemble post-construct)
          "No entry should contain less information after construct! than before")))))
