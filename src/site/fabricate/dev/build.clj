@@ -91,25 +91,29 @@
 
 (def options
   "Options for building Fabricate's own documentation."
-  (let [d "html"] {:site.fabricate.page/publish-dir d}))
+  {:site.fabricate.page/publish-dir  "html"
+   :site.fabricate.source/source-dir "docs"})
 
 
 (defmethod api/collect "*/**.fab"
-  [src _options]
+  [src {:keys [site.fabricate.source/source-dir] :as options}]
   (mapv (fn path->entry [p]
-          (merge (git/info (str p))
-                 {:site.fabricate.source/format :site.fabricate.read/v0
-                  :site.fabricate.document/format :hiccup
-                  :site.fabricate.source/location (fs/file p)
-                  :site.fabricate.api/source src
-                  :site.fabricate.source/created (time/file-created p)
-                  :site.fabricate.source/modified (time/file-modified p)
-                  :site.fabricate.page/format :html
-                  :site.fabricate.page/location
-                  (fs/file (:site.fabricate.page/publish-dir options))}))
-        (fs/glob (System/getProperty "user.dir") src)))
+          (let [p (fs/relativize (fs/cwd) p)]
+            (merge (git/info (str p))
+                   {:site.fabricate.source/format :site.fabricate.read/v0
+                    :site.fabricate.document/format :hiccup
+                    :site.fabricate.source/location (fs/file p)
+                    :site.fabricate.source/file (fs/absolutize p)
+                    :site.fabricate.api/source src
+                    :site.fabricate.source/created (time/file-created p)
+                    :site.fabricate.source/modified (time/file-modified p)
+                    :site.fabricate.page/format :html
+                    :site.fabricate.page/location
+                    (fs/file (:site.fabricate.page/publish-dir options))})))
+        (fs/glob (fs/file (System/getProperty "user.dir") source-dir) src)))
 
 (comment
+  (fs/glob (fs/file (System/getProperty "user.dir") "docs") "**/*.fab")
   (->> (api/collect "*/**.fab" {})
        (filter (fn [entry]
                  (re-find #"index"
@@ -119,20 +123,26 @@
        #_(#(api/produce! % {}))))
 
 (defmethod api/collect "docs/**.clj"
-  [src {:keys [site.fabricate.page/publish-dir] :as opts}]
+  [src
+   {:keys [site.fabricate.page/publish-dir site.fabricate.source/source-dir]
+    :as   opts}]
   (mapv (fn path->entry [p]
-          (merge (git/info (str p))
-                 {:site.fabricate.source/format   :clojure/v0
-                  :site.fabricate.document/format :hiccup
-                  :site.fabricate.source/location (fs/file (fs/cwd) p)
-                  :site.fabricate.page/location   (fs/file publish-dir)
-                  :site.fabricate.page/format     :html
-                  :site.fabricate.api/source      src
-                  :site.fabricate.source/created  (time/file-created p)
-                  :site.fabricate.source/modified (time/file-modified p)}))
-        (fs/glob "." src)))
+          (let [p (fs/relativize (fs/cwd) p)]
+            (merge (git/info (str p))
+                   {:site.fabricate.source/format   :clojure/v0
+                    :site.fabricate.document/format :hiccup
+                    ;:site.fabricate.source/location (fs/file  p)
+                    :site.fabricate.source/location (fs/absolutize p)
+                    :site.fabricate.page/location   (fs/file publish-dir)
+                    :site.fabricate.page/format     :html
+                    :site.fabricate.api/source      src
+                    :site.fabricate.source/created  (time/file-created p)
+                    :site.fabricate.source/modified (time/file-modified p)})))
+        (fs/glob (fs/file (fs/cwd) source-dir) src)))
 
 (comment
+  (git/info (str (fs/relativize (fs/cwd)
+                                (fs/absolutize "docs/index.html.fab"))))
   (api/collect "docs/**.clj" {:site.fabricate.page/publish-dir "html"}))
 
 
@@ -193,9 +203,9 @@
    (try (fabricate-v0->hiccup entry)
         (catch Exception ex
           (throw (ex-info (ex-message ex)
-                          (assoc (Throwable->map ex
-                                                 :site.fabricate.source/location
-                                                 loc))))))))
+                          (assoc (Throwable->map ex)
+                                 :site.fabricate.source/location
+                                 loc)))))))
 
 (defmethod api/build [:site.fabricate.markdown/v0 :markdown]
   ([entry _opts]
@@ -252,9 +262,10 @@
         (elements/constants-dl ns-vars)]] (elements/footer)]]))
 
 (def doc-namespaces
-  '[site.fabricate.prototype.document.clojure
-    site.fabricate.prototype.document.fabricate
-    site.fabricate.prototype.hiccup])
+  []
+  #_'[site.fabricate.prototype.document.clojure
+      site.fabricate.prototype.document.fabricate
+      site.fabricate.prototype.hiccup])
 
 
 (defmethod api/collect #'doc-namespaces
@@ -276,15 +287,18 @@
   (assoc entry :site.fabricate.document/data (ns-sym->hiccup entry-ns)))
 
 (defmethod api/collect "docs/posts/*.md"
-  [glob {:keys [site.fabricate.page/publish-dir :as opts]}]
+  [glob
+   {:keys [site.fabricate.page/publish-dir site.fabricate.source/source-dir]
+    :as   opts}]
   (mapv (fn [src-loc]
-          (merge (git/info (str src-loc))
-                 {:site.fabricate.source/format   :markdown/v0
-                  :site.fabricate.document/format :hiccup
-                  :site.fabricate.source/location (fs/file src-loc)
-                  :site.fabricate.page/format     :html
-                  :site.fabricate.page/location   (fs/file publish-dir)}))
-        (fs/glob (System/getProperty "user.dir") glob)))
+          (let [src-loc (fs/relativize (fs/cwd) src-loc)]
+            (merge (git/info (str src-loc))
+                   {:site.fabricate.source/format   :markdown/v0
+                    :site.fabricate.document/format :hiccup
+                    :site.fabricate.source/location (fs/file src-loc)
+                    :site.fabricate.page/format     :html
+                    :site.fabricate.page/location   (fs/file publish-dir)})))
+        (fs/glob (fs/path (fs/cwd) source-dir) glob)))
 
 (defmethod api/build [:markdown/v0 :hiccup]
   [{source-location :site.fabricate.source/location :as entry} opts]
@@ -357,7 +371,9 @@
     (spit output-file (c/html [c/doctype-html5 hiccup-page-data]))))
 
 (defn subpath
-  ([dir p] (apply fs/path (drop 1 (fs/components (fs/relativize dir p)))))
+  ([dir p]
+   (apply fs/path
+          (drop 1 (fs/components (fs/relativize dir (fs/absolutize p))))))
   ([p] (subpath (fs/cwd) p)))
 
 (defn output-path
@@ -368,6 +384,8 @@
 
 (comment
   (output-path (fs/path (fs/cwd) "docs/design/utopia.clj") "html")
+  (output-path (fs/relativize (fs/cwd) (fs/absolutize "docs/design/utopia.clj"))
+               "html")
   (output-path (fs/path (fs/cwd)
                         "docs/reference/namespaces.site.fabricate.api.clj")
                "html")
