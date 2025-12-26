@@ -3,7 +3,12 @@
             [clojure.test :as t]
             [matcher-combinators.test]
             [matcher-combinators.matchers :as match]
-            [babashka.fs :as fs]))
+            [babashka.fs :as fs]
+            [babashka.curl :as curl]
+            [clojure.edn :as edn]
+            [clojure.walk :as walk]
+            [clojure.string :as str]
+            [dev.onionpancakes.chassis.core :as c]))
 
 (def test-build-options
   (merge build/options {:site.fabricate.page/publish-dir (fs/create-temp-dir)}))
@@ -11,6 +16,78 @@
 (def test-site {:site.fabricate.api/options test-build-options})
 
 (def test-setup-tasks (drop-last 2 build/setup-tasks))
+
+(defn cleanup
+  [f]
+  (f)
+  (run! fs/delete-tree
+        (fs/list-dir {:site.fabricate.page/publish-dir test-build-options})))
+
+(t/use-fixtures :once cleanup)
+
+(comment
+  (->> test-site
+       (#'site.fabricate.api/plan! build/setup-tasks)
+       (#'site.fabricate.api/assemble [])
+       :site.fabricate.api/entries
+       first
+       :site.fabricate.document/data))
+
+(t/deftest dev-tools (t/testing "Dev namespaces"))
+
+(def kindly-map-pattern #".*[{].*:kindly[/]hide-code\s+.+[}].*")
+
+(defn no-kindly-maps?
+  [html-str]
+  (not (some? (re-matches kindly-map-pattern html-str))))
+
+(def example-entry
+  {:site.fabricate.document/data [c/doctype-html5 [:head]
+                                  [:body
+                                   [:article [:h1 "Test article"]
+                                    [:p "test text"]
+                                    {:kindly/hide-code true
+                                     :kindly/hide-result false
+                                     :kind  :default
+                                     :form  :test/form
+                                     :value :test/form}
+                                    [:div
+                                     ;; important corner case: kindly map
+                                     ;; as first element of Hiccup vector
+                                     ;; can get interpreted as element
+                                     ;; attributes instead of standalone
+                                     ;; element
+                                     {:kindly/hide-code true
+                                      :kindly/hide-result false
+                                      :kind  :default
+                                      :form  '(1 2 3)
+                                      :value '(1 2 3)}]]]]})
+
+(t/deftest functions
+  (t/is (match? {:site.fabricate.document/data (match/pred no-kindly-maps?)}
+                (update example-entry
+                        :site.fabricate.document/data
+                        #(c/html (build/kindly-maps->chassis-elements %))))
+        "Kindly maps in Hiccup forms should not be present in HTML output"))
+
+(comment
+  (-> example-entry
+      :site.fabricate.document/data
+      build/kindly-maps->chassis-elements
+      c/html))
+
+(defn hiccup-like? [v] (and (vector? v) (keyword? (first v))))
+
+(defn kindly-str-like?
+  [v]
+  (let [parsed (try (edn/read-string v) (catch Exception e nil))]
+    (build/kindly-like? parsed)))
+
+(defn get-first-string-elem
+  [v]
+  (->> v
+       (filter string?)
+       first))
 
 (defn get-unconverted-forms
   [hiccup-data]
@@ -34,7 +111,7 @@
     ;; local
     (string? link-str) (fs/exists? (str/replace link-str #"^/" "./"))
     :default false))
-(t/deftest dev-tools (t/testing "Dev namespaces"))
+
 (t/deftest build
   (t/testing "ability to build Fabricate manual without errors"
     (t/is (= :done

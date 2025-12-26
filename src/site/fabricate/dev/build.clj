@@ -8,6 +8,7 @@
             [site.fabricate.prototype.read.grammar :as grammar]
             [site.fabricate.prototype.hiccup :as hiccup]
             [site.fabricate.prototype.html :as html]
+            [site.fabricate.prototype.kindly :as kindly]
             [site.fabricate.prototype.document.clojure :as clj]
             [site.fabricate.prototype.document.fabricate :as fabricate]
             [site.fabricate.dev.source.markdown :as markdown]
@@ -19,7 +20,9 @@
             [babashka.fs :as fs]
             [dev.onionpancakes.chassis.core :as c]
             [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.walk :as walk]
+            [malli.core :as m]))
 
 (defn simple-expr
   "Takes a Clojure form and yields a string with the Fabricate template expression for that form."
@@ -361,6 +364,29 @@
 ;; (def assemble-index nil)
 
 ;; (defmethod assemble "index.html" [entry] (assemble-index entry))
+
+
+(defmethod c/resolve-alias ::KindlyForm
+  [_tag attrs [kind-map & contents]]
+  [:div
+   {:class ["kindly"]
+    :data-kind (:kind kind-map)
+    :data-kindly-hide-code (:kindly/hide-code kind-map)
+    :data-kindly-hide-result (:kindly/hide-result kind-map)}
+   ;; TODO: add actual kind handling somewhere
+   #_(kind->hiccup (:value kind-map)) (adorn/clj->hiccup (:value kind-map))])
+
+(def kindly? (m/validator kindly/Form))
+(defn kindly-like? [v] (and (map? v) (contains? v :value)))
+
+(defn kindly-maps->chassis-elements
+  "Convert all Kindly maps in the data to Chassis alias elements."
+  [hiccup-page-data]
+  (walk/postwalk (fn [v]
+                   (if (or (kindly? v) (kindly-like? v))
+                     [::KindlyForm {:class "kindly"} v]
+                     v))
+                 hiccup-page-data))
 
 
 (defn write-hiccup-html!
