@@ -10,19 +10,41 @@
 
 (def test-site {:site.fabricate.api/options test-build-options})
 
+(def test-setup-tasks (drop-last 2 build/setup-tasks))
+
+(defn get-unconverted-forms
+  [hiccup-data]
+  (let [unconverted (atom [])]
+    (walk/prewalk (fn check-value [v]
+                    (when (or (kindly-like? v)
+                              (and (hiccup-like? v)
+                                   (kindly-str-like? (get-first-string-elem
+                                                      v))))
+                      (swap! unconverted conj v))
+                    v)
+                  hiccup-data)
+    @unconverted))
+
+(defn broken-link?
+  [link-str]
+  (cond
+    ;; external
+    (str/starts-with? link-str "http(s)?://") (= 200
+                                                 (:status (curl/get link-str)))
+    ;; local
+    (string? link-str) (fs/exists? (str/replace link-str #"^/" "./"))
+    :default false))
 (t/deftest dev-tools (t/testing "Dev namespaces"))
 (t/deftest build
   (t/testing "ability to build Fabricate manual without errors"
     (t/is (= :done
              (do (->> test-site
-                      (#'site.fabricate.api/plan! build/setup-tasks)
+                      (#'site.fabricate.api/plan! test-setup-tasks)
                       (#'site.fabricate.api/assemble [])
                       (#'site.fabricate.api/construct! []))
                  :done))))
   (t/testing "Properties of build steps:"
-    (let [post-plan      (#'site.fabricate.api/plan!
-                          build/setup-tasks
-                          test-site)
+    (let [post-plan      (#'site.fabricate.api/plan! test-setup-tasks test-site)
           post-assemble  (#'site.fabricate.api/assemble [] post-plan)
           post-construct (#'site.fabricate.api/construct! [] post-assemble)]
       (t/testing "plan"
@@ -36,7 +58,16 @@
       (t/testing "assemble"
         (t/is
          (match? post-plan post-assemble)
-         "No entry should contain less information after assemble than before"))
+         "No entry should contain less information after assemble than before")
+        (t/is
+         (match? (match/seq-of {:site.fabricate.document/data
+                                (match/pred #(empty? (get-unconverted-forms %)))
+                                :site.fabricate.document/format :hiccup})
+                 (:site.fabricate.api/entries post-assemble))
+         "No Hiccup entry should contain unconverted Kindly forms after assemble"
+         ;; ... or should it?
+        )
+        (t/is false "No assembled entry should contain dead links"))
       (t/testing "construct!"
         (t/is
          (match? post-assemble post-construct)
