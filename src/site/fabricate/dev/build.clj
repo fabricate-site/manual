@@ -367,17 +367,20 @@
 
 
 (defmethod c/resolve-alias ::KindlyForm
-  [_tag attrs [kind-map & contents]]
+  [_tag _attrs [kind-map & contents]]
   [:div
    {:class ["kindly"]
     :data-kind (:kind kind-map)
     :data-kindly-hide-code (:kindly/hide-code kind-map)
     :data-kindly-hide-result (:kindly/hide-result kind-map)}
-   ;; TODO: add actual kind handling somewhere
-   #_(kind->hiccup (:value kind-map)) (adorn/clj->hiccup (:value kind-map))])
+   (api/display-form kind-map)])
 
 (def kindly? (m/validator kindly/Form))
 (defn kindly-like? [v] (and (map? v) (contains? v :value)))
+
+(defmethod api/display-form [nil :hiccup/html]
+  [{:keys [value] :as kindly-map}]
+  (adorn/clj->hiccup value))
 
 (defn kindly-maps->chassis-elements
   "Convert all Kindly maps in the data to Chassis alias elements."
@@ -390,11 +393,11 @@
 
 
 (defn write-hiccup-html!
-  "Generate HTML from Hiccup data and write it to the given file."
-  [hiccup-page-data output-file]
+  "Take generated HTML data and write it to the given file."
+  [hiccup-html-data output-file]
   (let [parent-dir (fs/parent output-file)]
     (create-dir? parent-dir)
-    (spit output-file (c/html [c/doctype-html5 hiccup-page-data]))))
+    (spit output-file hiccup-html-data)))
 
 (defn subpath
   ([dir p]
@@ -420,19 +423,24 @@
 (defn hiccup->html
   [{source-location :site.fabricate.source/location
     page-location :site.fabricate.page/location
-    :as entry} _opts]
-  (let [output-file
-        (fs/file (str (output-path
-                       (if (= "fab" (fs/extension source-location))
-                         (fs/strip-ext (fs/strip-ext source-location))
-                         (fs/strip-ext (:site.fabricate.source/location entry)))
-                       page-location)
-                      ".html"))]
+    hiccup-data   :site.fabricate.document/data
+    :as           entry} _opts]
+  (let [output-file (fs/file (str (output-path
+                                   (if (= "fab" (fs/extension source-location))
+                                     (fs/strip-ext (fs/strip-ext
+                                                    source-location))
+                                     (fs/strip-ext
+                                      (:site.fabricate.source/location entry)))
+                                   page-location)
+                                  ".html"))
+        html-data   (c/html [c/doctype-html5
+                             (kindly-maps->chassis-elements hiccup-data)])]
     (println "writing output to" (str output-file))
-    (write-hiccup-html! (:site.fabricate.document/data entry) output-file)
+    (write-hiccup-html! html-data output-file)
     (assert (fs/exists? output-file))
     (-> entry
         (assoc :site.fabricate.page/output output-file
+               :site.fabricate.page/data   html-data
                :site.fabricate.page/format :html))))
 
 (defmethod api/produce! [:hiccup :html]
