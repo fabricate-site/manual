@@ -4,6 +4,57 @@
 
 Notes that don't go anywhere else go here. Posted in reverse chronological order.
 
+## 2026-01-06
+
+I am observing what I consider to be inconsistencies in the behavior and return values of the functions in `kindly-advice`. Here are some examples:
+
+```clojure
+
+(-> {:form ^{:kindly/kind :kind/vector} [1 2 3]}
+    (scicloj.kindly-advice.v1.completion/complete)
+    (scicloj.kindly-advice.v1.api/advise))
+```
+
+This returns:
+
+```clojure
+{:form [1 2 3],
+ :value [1 2 3],
+ :meta-kind :kind/vector,
+ :kindly/options {:hide-code true},
+ :kind :kind/vector,
+ :advice
+ [[:kind/vector {:reason :metadata}]
+  [:kind/vector {:reason :predicate}]
+  [:kind/seq {:reason :predicate}]]}
+
+```
+
+If `:kindly/kind` is the expected way to specify the kind of a value using metadata, why does the namespace get removed?
+
+If I try to use the `scicloj.kindly-advice.v1.completion` namespace to return a completed form map, I also observe:
+
+```clojure
+(scicloj.kindly-advice.v1.completion/complete
+ {:form ^{:kindly/kind :kind/vector}
+  [1 2 3]})
+```
+
+
+```clojure
+{:form [1 2 3],
+ :value [1 2 3],
+ :meta-kind :kind/vector,
+ :kindly/options {:hide-code true}}
+```
+
+This doesn't set `:kindly/kind` _or_ `:kind`. 
+
+Should `:kind` be compatible in the other direction? For example: `:kind :kind/hiccup`. It's currently not. This could just be based on my own misunderstanding. If I fix some of my assumptions here I could also radically simplify the code - I could potentially delete the evaluation namespace and remove many of the functions I currently use to haphazardly normalize values to kindly context maps.
+
+I still think the meta-kind vs kind vs kindly/kind thing is worth asking about, if only to better understand the rationale.
+
+
 ## 2025-12-26: Kindly elements in Hiccup forms
 
 With the addition of the `kindly-forms` branch, the implementations of both the plain-clojure and template source formats yield Hiccup forms that can contain Kindly context maps at arbitrary levels of depth. There now arises a question about how to handle these when generating output - right now they are included verbatim in the output.
