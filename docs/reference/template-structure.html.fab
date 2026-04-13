@@ -10,13 +10,13 @@
    [site.fabricate.dev.styles :as styles]
    )) 🔚
    
-✳(def metadata {:title "A Reference to Fabricate's Page Templates"
-              })🔚
-                                    ✳=[:h1 {:class "big-text"} (:title metadata)]🔚
+✳(def metadata {:title "A Reference to Fabricate's Page Templates"})🔚
+
+
+✳=[:h1 {:class "big-text"} (:title metadata)]🔚
                                     
 ✳ (defn expr->hiccup [e]
-  (adorn/clj->hiccup (zp/zprint-str e {:style [:community :justified] :map {:comma? false}}
-                                    ))) 🔚
+    (adorn/clj->hiccup (zp/zprint-str e {:style [:community :justified] :map {:comma? false}}))) 🔚
 
 
 This page has an informal explanation of the parts that make up a Fabricate page, using inputs and outputs paired together for demonstration purposes.
@@ -37,14 +37,14 @@ Useful for: namespace declarations, variable definitions, and other side effects
 ✳(def run-exprs
   '[(ns my-demo-ns
       (:require [site.fabricate.prototype.hiccup :as hiccup]))
-    (def metadata {:title "My page"})])🔚
+    (def metadata {:title "My page"})]) 🔚
      ✳=(list [:h3 {:class "l-text"} "Examples"]
            (apply conj [:div {:class "main-track small"}]
                   (for [expr run-exprs]
                     [:pre (first grammar/delimiters)
                      [:code {:class "language-clojure"}
                       (expr->hiccup expr)]
-                     (peek grammar/delimiters)])))🔚
+                     (peek grammar/delimiters)]))) 🔚
 
 ✳=[:h2 (first grammar/delimiters) "= - " "Yield expressions"]🔚
 ✳(def yield-exprs
@@ -69,7 +69,7 @@ Useful for: anything you'd use HTML for.
                     [:code (expr->hiccup expr)] (last grammar/delimiters)]]
                   [:div {:class "example-row"} expr]]))]
 
-       )🔚
+       ) 🔚
 
 ✳=[:h2 (first grammar/delimiters) "+"  "Insert expressions"]🔚
 Use this for when you want to evaluate some code and insert the expression into the result, but not its output.
@@ -105,7 +105,7 @@ Useful for: when you want to demonstrate some code that contributes to the page 
                 [:pre
                  {:class "example-row"}
                  [:code (expr->hiccup expr) ]]
-                ])))🔚
+                ]))) 🔚
 
 ✳=[:h2 (first grammar/delimiters) "+=" "Composing control characters"]🔚
 
@@ -156,7 +156,7 @@ Useful for: showing off your art alongside the code that produced it.
                 [:div
                  {:class "example-row"}
                  (eval expr)]
-                ])))🔚
+                ]))) 🔚
 
 ✳=[:h2 "Interlude: (code) documentation as data"]🔚
 
@@ -169,7 +169,7 @@ Sometimes it's preferable to group multiple forms together along with paragraphs
 ✳(def extended-form-example
 {:open (str (first grammar/delimiters) "// [:section {:class \"chapter\"}" )
  :contents (format "Text in a \"chapter\" section. Embedded expressions can be included as well, like %s=[:em \"emphasized text.\"] %s" (first grammar/delimiters) (last grammar/delimiters))
-:close (str "]//" (last grammar/delimiters))})🔚
+:close (str "]//" (last grammar/delimiters))}) 🔚
 
 ✳=[:h3 "Form Definition"]🔚
 ✳=[:pre  [:code (:open extended-form-example) ]
@@ -183,7 +183,7 @@ Sometimes it's preferable to group multiple forms together along with paragraphs
 ✳=(-> (:contents extended-form-example)
       read/parse
       (read/eval-all)
-      (#(apply conj [:span] %)))🔚
+      (#(apply conj [:span] %))) 🔚
 
 ✳=[:h2 "A longer example document: this page"]🔚
 
@@ -206,9 +206,7 @@ This page itself uses many of the "useful for" tips I mentioned in the first sec
                                     (contains? i :exec) "")]
                           [:span start ctrl-char
                            (expr->hiccup
-                            
                             (or (:expr i) (:exec i))
-                            
                             )
                            end])
                         (string? i) [:span {:class "fabricate-txt"} i]

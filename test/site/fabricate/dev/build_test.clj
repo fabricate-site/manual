@@ -11,6 +11,9 @@
             [dev.onionpancakes.chassis.core :as c]
             [scicloj.kindly.v4.api :as kind]
             [site.fabricate.prototype.kindly :as kindly]
+            [site.fabricate.prototype.properties :as props]
+            ;; TODO: figure out how to get html validation locally
+            #_[site.fabricate.dev.html :as html-check]
             [site.fabricate.api :as api]
             [site.fabricate.adorn :as adorn]))
 
@@ -48,6 +51,8 @@
 (defmethod api/display-form [:kind/code :hiccup/html]
   [{:keys [value]}]
   (adorn/clj->hiccup value))
+
+(defmethod api/display-form [:hiccup :hiccup/html] [{:keys [value]}] value)
 
 (def example-entry
   {:site.fabricate.document/data [c/doctype-html5 [:head]

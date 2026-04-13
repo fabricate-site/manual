@@ -387,7 +387,7 @@
   [hiccup-page-data]
   (walk/postwalk (fn [v]
                    (if (or (kindly? v) (kindly-like? v))
-                     [::KindlyForm {:class "kindly"} v]
+                     [::KindlyForm {:class "kindly"} (api/render-form v)]
                      v))
                  hiccup-page-data))
 

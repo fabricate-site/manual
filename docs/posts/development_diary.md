@@ -4,6 +4,16 @@
 
 Notes that don't go anywhere else go here. Posted in reverse chronological order.
 
+## 2026-02-19
+
+`api/display-form` is a nice convenience; I see it as analogous to `clojure.core/print-dup`, but with a `:kind` and a page format rather than an object type and a writer. What is lacking is a standardized way of transforming a nested value into output in the way that `pr` does. Looking at [`core_print.clj`](https://github.com/clojure/clojure/blob/a3fa897590f70207eea3573759739810f2b6ab6c/src/clj/clojure/core_print.clj#L117), its implementation is simpler because it's just looping through Clojure data and appending / flushing to a writer. It has an easier time preserving nested structure because it just needs to append the appropriate delimiter to the writer when reaching the end of a collection rather than traverse back up to the parent element. 
+
+I want to output a plain Hiccup data structure from a data structure containing nested Kindly-annotated values, so this is more analogous to a `clojure.walk` operation. 
+
+I previously thought `kindly-advice` was the way to do this, but it (perhaps unsurprisingly) doens't have the ability to recurse through arbitrarily nested data to find the Kindly-annotated values.
+
+This means that I should also implement a convenience function in `site.fabricate.prototype.kindly` to walk and transform a document with nested forms. The nice thing about `walk` is that it's completely agnostic to the data structure you're using.
+
 ## 2026-01-06
 
 I am observing what I consider to be inconsistencies in the behavior and return values of the functions in `kindly-advice`. Here are some examples:
