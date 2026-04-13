@@ -54,7 +54,7 @@ Useful for: namespace declarations, variable definitions, and other side effects
          [:figcaption "Bret Victor, "
           [:a {:href "https://vimeo.com/64895205"}
            [:em "Stop Drawing Dead Fish"]]]]
-        [:img {:src "https://live.staticflickr.com/3770/11073365765_6dd38cce29_z.jpg"}])) 🔚
+        [:img {:alt "An engraving or lithograph of pieces of chopped wood" :src "https://live.staticflickr.com/3770/11073365765_6dd38cce29_z.jpg"}])) 🔚
 If you add the "=" character after the asterisk - ✳=[:span (first grammar/delimiters) "="]🔚, the expression's results get added into the page. Hiccup expressions, like ✳=[:code "[:code \"example inline code\"]"]🔚 are included in the document tree and will be transformed into HTML all at once after the document is evaluated.
 
 Useful for: anything you'd use HTML for.
@@ -172,9 +172,11 @@ Sometimes it's preferable to group multiple forms together along with paragraphs
 :close (str "]//" (last grammar/delimiters))})🔚
 
 ✳=[:h3 "Form Definition"]🔚
-✳=[:pre [:p [:code (:open extended-form-example) ]]
-   [:p [:code (:contents extended-form-example) ]]
-   [:p [:code (:close extended-form-example) ]]]🔚
+✳=[:pre  [:code (:open extended-form-example) ]
+[:br]
+ [:code (:contents extended-form-example) ]
+[:br]
+ [:code (:close extended-form-example) ]]🔚
 
 ✳=[:h3 "Results"]🔚
 
