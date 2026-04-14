@@ -366,14 +366,6 @@
 ;; (defmethod assemble "index.html" [entry] (assemble-index entry))
 
 
-(defmethod c/resolve-alias ::KindlyForm
-  [_tag _attrs [kind-map & contents]]
-  [:div
-   {:class ["kindly"]
-    :data-kind (:kind kind-map)
-    :data-kindly-hide-code (:kindly/hide-code kind-map)
-    :data-kindly-hide-result (:kindly/hide-result kind-map)}
-   (api/display-form kind-map)])
 
 (def kindly? (m/validator kindly/Form))
 (defn kindly-like? [v] (and (map? v) (contains? v :value)))
@@ -382,14 +374,34 @@
   [{:keys [value] :as kindly-map}]
   (adorn/clj->hiccup value))
 
+(defmethod api/display-form [:hiccup :hiccup/html]
+  [{:keys [value] :as kindly-map}]
+  value)
+
+(defmethod api/display-form [:fabricate/error :hiccup/html]
+  [{:keys [value error] :as kindly-map}]
+  (adorn/clj->hiccup error))
+
+(defmethod c/resolve-alias ::KindlyForm
+  [_tag _attrs v & contents]
+  [:div _attrs v])
+
 (defn kindly-maps->chassis-elements
   "Convert all Kindly maps in the data to Chassis alias elements."
   [hiccup-page-data]
-  (walk/postwalk (fn [v]
-                   (if (or (kindly? v) (kindly-like? v))
-                     [::KindlyForm {:class "kindly"} (api/render-form v)]
-                     v))
-                 hiccup-page-data))
+  (walk/postwalk
+   (fn [v]
+     (if (or (kindly? v) (kindly-like? v))
+       [::KindlyForm
+        {:class ["kindly"]
+         :data-kind (or (:kind v) (:kindly/kind v))
+         :data-kindly-hide-code (or (:kindly/hide-code v)
+                                    (:kindly/hide-code (:kindly/options v)))
+         :data-kindly-hide-result
+         (or (:kindly/hide-result v) (:kindly/hide-result (:kindly/options v)))}
+        (api/render-form v)]
+       v))
+   hiccup-page-data))
 
 
 (defn write-hiccup-html!

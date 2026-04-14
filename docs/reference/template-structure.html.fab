@@ -8,7 +8,9 @@
    [zprint.core :as zp]
    [garden.stylesheet :as stylesheet]
    [site.fabricate.dev.styles :as styles]
-   )) 🔚
+   [malli.core :as m]
+   [site.fabricate.prototype.kindly :as kindly]
+   ))  🔚
    
 ✳(def metadata {:title "A Reference to Fabricate's Page Templates"})🔚
 
@@ -16,7 +18,7 @@
 ✳=[:h1 {:class "big-text"} (:title metadata)]🔚
                                     
 ✳ (defn expr->hiccup [e]
-    (adorn/clj->hiccup (zp/zprint-str e {:style [:community :justified] :map {:comma? false}}))) 🔚
+    (adorn/clj->hiccup (zp/zprint-str e {:style [:community :justified] :map {:comma? false #_ #_:parse-string? true}}))) 🔚
 
 
 This page has an informal explanation of the parts that make up a Fabricate page, using inputs and outputs paired together for demonstration purposes.
@@ -189,27 +191,28 @@ Sometimes it's preferable to group multiple forms together along with paragraphs
 
 This page itself uses many of the "useful for" tips I mentioned in the first section. You might find the source code of the page instructive, so it is included below:
 
+
+✳ (def kindly? (m/validator kindly/Form)) 🔚
+
 ✳=[:pre {:class "small fabricate-src" :style {:grid-column "1 / -1"}}
  
- [:code (->> 
-         "docs/reference/template-structure.html.fab"
-         slurp
-         (#(read/parse %
-                       {:filename "docs/reference/template-structure.html.fab"}))
-         (map
-          (fn [i] (cond (read/fabricate-expr? i)
-                        (let [[start end] grammar/delimiters
-                              ctrl-char
-                              (cond (and (contains? i :expr) (:display i)) "+="
-                                    (:display i) "+"
-                                    (contains? i :expr) "="
-                                    (contains? i :exec) "")]
-                          [:span start ctrl-char
-                           (expr->hiccup
-                            (or (:expr i) (:exec i))
-                            )
-                           end])
-                        (string? i) [:span {:class "fabricate-txt"} i]
-                        :default i
-                        )))
-         (apply list)) ]]🔚
+
+ (into [:code] (->>
+                "docs/reference/template-structure.html.fab"
+                slurp
+                (#(read/parse %
+                              {:filename "docs/reference/template-structure.html.fab"}))
+                (map
+                 (fn [i] (cond (map? i)
+                               (let [[start end] grammar/delimiters
+                                     ctrl-char
+                                     (cond (and (contains? i :expr) (:display i)) "+="
+                                           (:display i) "+"
+                                           (contains? i :expr) "="
+                                           (contains? i :exec) "")]
+                                 [:span start ctrl-char
+                                  (adorn/clj->hiccup
+                                   (:code i))
+                                  end])
+                               (string? i) [:span {:class "fabricate-txt"} i]
+                               :default i))))) ]🔚

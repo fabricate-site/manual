@@ -1454,3 +1454,7 @@ a.ns-link:hover:after {
     display: inline-block;
     width: 1ch;
 }
+
+article div.kindly {
+  display: inline;
+}
