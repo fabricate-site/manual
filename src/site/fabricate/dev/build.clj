@@ -189,12 +189,10 @@
                                   elements/opengraph-metadata))
                         [:body
                          [:main
-                          (apply conj
-                                 [:article
-                                  {:lang  "en-us"
-                                   :class "u-grid-flex fabricate-article"}]
-                                 (hiccup/parse-paragraphs evaluated-page))]
-                         (elements/footer)
+                          (into [:article
+                                 {:lang  "en-us"
+                                  :class "u-grid-flex fabricate-article"}]
+                                evaluated-page)] (elements/footer)
                          #_[:footer [:div [:a {:href "/"} "Home"]]]]]]
     (assoc entry
            :site.fabricate.document/data hiccup-page
@@ -389,19 +387,21 @@
 (defn kindly-maps->chassis-elements
   "Convert all Kindly maps in the data to Chassis alias elements."
   [hiccup-page-data]
-  (walk/postwalk
-   (fn [v]
-     (if (or (kindly? v) (kindly-like? v))
-       [::KindlyForm
-        {:class ["kindly"]
-         :data-kind (or (:kind v) (:kindly/kind v))
-         :data-kindly-hide-code (or (:kindly/hide-code v)
-                                    (:kindly/hide-code (:kindly/options v)))
-         :data-kindly-hide-result
-         (or (:kindly/hide-result v) (:kindly/hide-result (:kindly/options v)))}
-        (api/render-form v)]
-       v))
-   hiccup-page-data))
+  (walk/postwalk (fn [v]
+                   (if (or (kindly? v) (kindly-like? v))
+                     (api/render-form v)
+                     #_[::KindlyForm
+                        {:class ["kindly"]
+                         :data-kind (or (:kind v) (:kindly/kind v))
+                         :data-kindly-hide-code (or (:kindly/hide-code v)
+                                                    (:kindly/hide-code
+                                                     (:kindly/options v)))
+                         :data-kindly-hide-result (or (:kindly/hide-result v)
+                                                      (:kindly/hide-result
+                                                       (:kindly/options v)))}
+                        (api/render-form v)]
+                     v))
+                 hiccup-page-data))
 
 
 (defn write-hiccup-html!
@@ -446,7 +446,9 @@
                                    page-location)
                                   ".html"))
         html-data   (c/html [c/doctype-html5
-                             (kindly-maps->chassis-elements hiccup-data)])]
+                             (-> hiccup-data
+                                 (kindly-maps->chassis-elements)
+                                 (update-in [2 1 1] hiccup/parse-paragraphs))])]
     (println "writing output to" (str output-file))
     (write-hiccup-html! html-data output-file)
     (assert (fs/exists? output-file))
