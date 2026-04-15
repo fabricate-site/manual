@@ -1458,3 +1458,9 @@ a.ns-link:hover:after {
 article div.kindly {
   display: inline;
 }
+
+.u-grid-flex {
+   blockquote, pre, h1,h2,h3,h4,h5,h6, header {
+    grid-column: span 5;
+  }
+}
