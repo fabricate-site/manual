@@ -6,7 +6,7 @@
 🔚
 ✳
 (def metadata
-  {:title "Namespaces" :page-style (slurp "docs/css/fabricate.css")})
+  {:title "Namespaces" })
 🔚
 ✳=
 
@@ -17,8 +17,9 @@
                :color "var(--color-sand)"
                :padding-left "var(--grid-gap-x)"
                :padding-right "var(--grid-gap-x)"
-               :padding-bottom "0.25em"
-               :margin-bottom "0em"}}
+               :padding-bottom "var(--space-xs)"
+               ;;:border-radius "var(--space-3xs)"
+               :margin-bottom "0"}}
   (:title metadata)]
  [:div {:style {:background "var(--color-sand)"
               :display "block"
@@ -48,7 +49,7 @@
                  :background "var(--color-brown)"}}
     [:a {:class "decor-internal"
          :href "/reference/namespaces/site.fabricate.api.html"} "api"]] [:dd {:style {:background "var(--color-sand)"}} "core API for Fabricate."]]
-  [:div {:style {:background "var(--color-gray)"
+  #_[:div {:style {:background "var(--color-gray)"
                  :border-bottom-color "var(--color-gray)"
                  :outline-color "var(--color-gray)"}}
    [:dt {:style {:color "var(--color-sand)"}} 
@@ -56,7 +57,7 @@
          :href "/reference/namespaces/site.fabricate.source.html"} "source"]]
    [:dd "Registers default collect multimethods for source files. Require it to enable shorthand for entry keys like " 
     [:code {:class "language-clojure keyword"} "::source/location."]]]
-  [:div {:style {:background "var(--color-blue)"
+  #_[:div {:style {:background "var(--color-blue)"
                  :outline-color "var(--color-blue)"
                  :border-color "var(--color-blue)"
                  :outline-width "var(--grid-gap-x)"}}
@@ -82,7 +83,7 @@
      [:a {:class "decor-internal"
           :href "/reference/namespaces/site.fabricate.document.markdown.html"}  "markdown"]] [:dd "Convert Markdown to Hiccup."]
 ]
-  [:div
+  #_[:div
    {:style {:background "var(--color-green)"
             :outline-color "var(--color-green)"
             :border-color "var(--color-green)"
@@ -121,7 +122,19 @@
    [:dt {:style {:color "var(--color-yellow)"
                  :padding-left "0.75em"}}
     [:a {:class "decor-internal"
-         :href "/reference/namespaces/site.fabricate.prototype.hiccup.html"} "hiccup"]] [:dd]]
+         :href "/reference/namespaces/site.fabricate.prototype.hiccup.html"} "hiccup"]] [:dd]
+  [:dt {:style {:color "var(--color-yellow)"
+                 :padding-left "0.75em"}}
+   "source"
+    #_[:a {:class "decor-internal"
+         :href "/reference/namespaces/site.fabricate.prototype.source"} "source"]] 
+   [:dd ]
+   [:dt {:style {:color "var(--color-yellow)" :padding-left "1.5em"}}
+    [:a {:class "decor-internal" :href "/reference/namespaces/site.fabricate.prototype.source.clojure.html"} "clojure"]] [:dd "Generate Hiccup by evaluating Clojure namespaces."]
+   [:dt {:style {:color "var(--color-yellow)" :padding-left "1.5em"}} 
+    [:a {:class "decor-internal" :href "/reference/namespaces/site.fabricate.prototype.source.fabricate.html"} "fabricate"]
+] [:dd "Generate Hiccup by evaluating Fabricate templates."]
+]
   ]]
 
 🔚

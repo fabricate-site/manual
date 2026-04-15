@@ -2,17 +2,16 @@
 (:require
  [clojure.string :as str]
  [site.fabricate.prototype.read.grammar :as grammar]
- [site.fabricate.dev.styles :as styles]
- [garden.core :as garden]
- [garden.selectors :as select]
- [garden.stylesheet :as stylesheet]
+ [site.fabricate.dev.build.utils :as utils]
+ [site.fabricate.dev.elements :as elements]
  )) 🔚
 
 ✳(def metadata {:title "Tutorial: Creating Documentation for Clojure Projects with Fabricate"  })🔚
 ✳=
 (let [[title subtitle] (clojure.string/split (:title metadata) #":")]
-  [:div [:h1 {:class "xl-text"} title]
-   [:h3 subtitle] [:hr]])🔚
+  [:div [:h1 {:style {:margin-bottom "0"}} title]
+   [:h3 {:style {:grid-row "2" :grid-column "1 / -1"
+                 :font-size "var(--step-1)"}} subtitle] [:hr]])🔚
 ✳=[:h2 "Introduction"]🔚
 ✳=[:h3 "What you'll learn in this tutorial:"]🔚
 How to use Fabricate alongside your own code to document your project.
@@ -47,9 +46,8 @@ We'll be doing all the setup we need to do from the Clojure REPL. As long as you
 ]
 ) 🔚
 ✳= [:h2 "Steps"] 🔚
-
-✳= (into [:ol {:class "steps"}]
-       (for [{:keys [step/name step/slug step/summary]} steps] [:li {:class "step"} [:b [:a {:href (str "#" slug) } name]] summary]) ) 🔚
+✳= [:figure (into [:ol {:class "steps"}]
+                (for [{:keys [step/name step/slug step/summary]} steps] [:li {:class "step"} [:b [:a {:href (str "#" slug) } name]] [:br] summary]) )] 🔚
 
 
 ✳= (let [n 0 step (nth steps n)]
@@ -59,38 +57,44 @@ In your Clojure project's folder, you will have a file called ✳=[:code "deps.e
 
 This file is just an EDN map, defining in plain text an associative array much like Clojure's own hash maps. If you've used JSON before, you can think of EDN like Clojure's version of JSON. The important part is this file maps from certain keys to values - you can add Fabricate to the project by updating the ✳=[:code ":aliases"]🔚 key with a new key. You might already have aliases defined for your project, in which case you'll add another one for Fabricate. If you don't, then you can just add an ✳=[:code ":aliases"]🔚 key with the same information.
 
+✳ (def deps-coords
+  (-> "deps.edn"
+      slurp
+      clojure.edn/read-string
+      (get-in [:deps 'site.fabricate/fabricate]))) 🔚
 
-✳= [:div {:style (garden/style {:width "40ch"})}
-[:h5 "If you already have aliases defined"]
-[:pre [:code {:class "language-clojure"}
-       ":aliases {
-:test {:extra-paths [\"test\"]
-   :extra-deps org.clojure/test.check {:mvn/version \"1.1.0\"}}" [:br]
-       [:ins
-       ":fabricate {:extra-deps site.fabricate/fabricate"]
-[:ins
-"    {:git/url \"https://github.com/fabricate-site/fabricate/\""]
-[:ins "     :sha \"7fb30c0ead0c03ef0cc4c0133a2329752e0db37b\"}}"]
-        "}"
-       ]]]🔚
+✳= [:div {:style {:grid-column "1 / -1"} :class "subgrid"}
+    [:h5 "If you already have aliases defined"]
+    [:pre {:style {:grid-column "1 / -1"}} [:code {:class "language-clojure"}
+                                            ":aliases {"
+                                            (utils/str->hiccup 
+   ":test {:extra-paths [\"test\"]
+      :extra-deps org.clojure/test.check {:mvn/version \"1.1.0\"}}") [:br]
+                                            [:ins
+                                             (utils/expr->hiccup :fabricate) [:br]
+                                             (utils/expr->hiccup 
+                                              {:extra-deps deps-coords})
+                                             ] [:br]
+"}"]]]🔚
 
 
-✳= [:div {:style (garden/style {:flex "40%"})}
+✳= [:div {:style {:grid-column "1 / -1"}}
 [:h5 "If your project doesn't have aliases defined yet"]
-[:pre [:code {:class "language-clojure"}
+[:pre {:style {:grid-column "1 / -1"}}  [:code {:class "language-clojure"}
 "…" [:br]
-      [:ins ":aliases {"]
-       [:ins
-       ":fabricate {:extra-deps site.fabricate/fabricate"]
-[:ins
-"    {:git/url \"https://github.com/fabricate-site/fabricate/\""]
-[:ins "     :sha \"7fb30c0ead0c03ef0cc4c0133a2329752e0db37b\"}}"]
-[:ins "}"] "…"
+                                         [:ins                                
+                                          (utils/expr->hiccup :aliases) [:br]
+                                          (utils/expr->hiccup
+                                           {:fabricate {:extra-deps deps-coords}})]
+                                         
+       [:br]
+
+ "…"
        ]]]🔚
 
 Once you have this alias, you can test it by launching your Clojure REPL with it:
 
-✳=[:pre {:class "shell"} [:code  "clojure -A:fabricate -X:clojure.main/main"]]🔚
+✳=[:pre {:class "shell"} [:code  "clojure -M:fabricate:clojure.main/main"]]🔚
 
 You'll use this REPL for the rest of the tutorial.
 
@@ -101,17 +105,19 @@ Run the following commands in your REPL:
 
 
 ✳=[:pre {:class "repl"}
-[:code {:class "language-clojure"} "(require '[clojure.java.io :as io])"]
-[:code {:class "language-clojure"} "(io/make-parents \"./pages/intro.html.fab\")"]
-[:code {:class "language-clojure"} "(io/make-parents \"./docs/\")"]
+ [:code {:class "language-clojure"} (utils/str->hiccup "(require '[clojure.java.io :as io])")]
+ [:code {:class "language-clojure"} (utils/expr->hiccup '(io/make-parents "./pages/intro.html.fab"))]
+ [:code {:class "language-clojure"} (utils/expr->hiccup '(io/make-parents "./docs/"))]
 ]🔚
 
 Make sure the files and folders got created:
 
 ✳=[:pre {:class "repl"}
 [:code {:class "language-clojure"} "(.exists (io/file \"./pages/intro.html.fab\"))"]
-[:code {:class "language-clojure"} "(let [f (io/file \"./docs/\")]
-(and (.exists f) (.isDirectory f)))"]
+[:code {:class "clojure-result"} (utils/expr->hiccup true)]
+ [:code {:class "language-clojure"} (utils/expr->hiccup '(let [f (io/file "./docs/")]
+                                                           (and (.exists f) (.isDirectory f))))]
+[:code {:class "clojure-result"} (utils/expr->hiccup true)]
 ]🔚
 
 The results for both of those commands should be ✳=[:code "true"]🔚.
@@ -123,19 +129,21 @@ You might already have some text in a ✳=[:code "README"]🔚 file somewhere; t
 
 Now you're ready to write. Open the file you created in your editor. Here's a basic structure you can get started with:
 
-✳(def example-lines
-  (mapv #(format % (first grammar/delimiters) (last grammar/delimiters))
-        ["%1$s(ns my-library.docs.intro)%2$s"
-         "%1$s(def metadata {:title \"Intro to my library\"})%2$s"
-         "%1$s=[:h1 (:title metadata)] %2$s"
-"This document gives an overview of the library."]))🔚
 
-✳=[:pre [:code (str/join "\n\n" example-lines)]]🔚
+
+✳(def example-lines
+  
+  [(elements/fabricate-example "(ns my-library.docs.intro)")
+   (elements/fabricate-example "(def metadata {:title \"Intro to my library\"})")
+   (elements/fabricate-example "[:h1 (:title metadata)]" "=")
+   "This document gives an overview of the library."])🔚
+
+✳=[:pre {:class "fabricate-template"} (interpose [:br] example-lines)]🔚
 
 The first three lines are Fabricate blocks, which contain Clojure code. They start with the ✳=(first grammar/delimiters)🔚 emoji and end with the ✳=(last grammar/delimiters)🔚 emoji. Usually they contain only one expression each. The last line is plain text. This is a short snippet, but it contains a few important ideas about Fabricate, so it's worth going through it line-by-line and seeing why each of these lines matters to the final page.
 
 ✳=[:h5 "Line 1: Each page is a namespace"]🔚
-✳=[:pre [:code (nth example-lines 0)]]🔚
+✳=[:pre {:class "fabricate-template"} [:code (nth example-lines 0)]]🔚
 
 In Fabricate, pages are organized and kept separate from one another by using the same method used to organize ordinary Clojure code: ✳=[:a {:href "https://clojure.org/reference/namespaces"} "namespaces"]🔚. You can require libraries, define variables, and do anything you'd do in an ordinary Clojure file in a Fabricate file. Just like an ordinary Clojure file, it's sensible to begin a Fabricate file with a namespace declaration.
 
@@ -144,7 +152,7 @@ In Fabricate, pages are organized and kept separate from one another by using th
 For more context on how Fabricate uses the file you're writing in to produce a page, you can see the reference docs "anatomy of a Fabricate page template" and "the Fabricate reading process".
 
 ✳=[:h5 "Line 2: One variable is special: " [:code "metadata"]]🔚
-✳=[:pre [:code (nth example-lines 1)]]🔚
+✳=[:pre {:class "fabricate-template"} [:code (nth example-lines 1)]]🔚
 
 The ✳=[:code "metadata"]🔚 variable tells Fabricate about the page itself: what its title is, whether it should define any custom CSS, or load any JavaScript. The most visible use of this variable is to set the HTML document ✳=[:code "&lttitle&gt"]🔚 tag using the ✳=[:code ":title"]🔚 keyword, so the web browser can give the page a title.
 
@@ -153,7 +161,7 @@ This variable is one of the few that you have to pay special attention to in ord
 ✳=[:aside "If you want to add your own keys to this map that don't overlap with the keys Fabricate already uses - that's always OK. You can and should enhance this with your own metadata if you feel it would be useful."]🔚
 
 ✳=[:h5 "Line 3: Use = to produce output"]🔚
-✳=[:pre [:code (nth example-lines 2)]]🔚
+✳=[:pre {:class "fabricate-template"} [:code (nth example-lines 2)]]🔚
 
 This is where Fabricate first produces the contents of the HTML page; by including ✳=[:code "="]🔚 after the ✳=(first grammar/delimiters)🔚 emoji, the input file is telling Fabricate to include the result in the page - in this case, a header with the title defined in the ✳=[:code "metadata"]🔚 variable.
 
@@ -162,7 +170,7 @@ The first two Fabricate expressions in the example code don't produce anything i
 This expression is how Fabricate lets you use all of HTML inline, with the full power of Clojure to create and mold it.
 
 ✳=[:h5 "Line 4: Your own writing"]🔚
-✳=[:pre [:code (nth example-lines 3)]]🔚
+✳=[:pre {:class "fabricate-template"} [:code (nth example-lines 3)]]🔚
 
 Beyond this, it's up to you! Fabricate gives you some tools to help you along, but doesn't impose much of a structure on you. You can define the page you're writing, and the functions you use to help you write, however you see fit.
 
@@ -173,10 +181,23 @@ You should change this line to reflect what your library can do for its users, a
 
 Run Fabricate's ✳=[:code "publish!"]🔚 function from the  ✳=[:code "site.fabricate.prototype.write"]🔚 namespace.
 
-You can do this from your REPL, as before:
+You can do this from your REPL, as before.
 
-✳=[:pre {:class "repl"} [:code "(require '[site.fabricate.prototype.write :as write])"]
-[:code "(write/publish! {:files [\"./pages/intro.html.fab\"]})"]
-]🔚
+✳=
+[:pre {:class "repl"} [:code {:class "language-clojure"}
+(utils/str->hiccup "(require '[site.fabricate.api :as api]
+[site.fabricate.prototype.source.fabricate]
+[site.fabricate.prototype.page.html])")
+ ]] 🔚
+
+Requiring the ✳=[:code {:class "language-clojure symbol"} "site.fabricate.prototype.source.fabricate"]🔚 namespace registers two multimethods: one that will automatically collect all of the templates into entries, and another that will automatically generate Hiccup from the template by reading and evaluating it.
+
+Requiring the ✳=[:code {:class "language-clojure symbol"} "site.fabricate.prototype.page.html"]🔚 namespace registers a multimethod for the templates that will automatically generate HTML from Hiccup.
+
+✳=[:pre {:class "repl"} 
+ [:code (utils/expr->hiccup '(->> {}
+                                  (api/plan! [])
+                                  (api/assemble [])
+                                  (api/construct! [])))]]🔚
 
 You should see some output in your REPL about the page getting read, parsed, and evaluated. Don't worry too much about that for the time being. Check to see if your page is there by opening the file in your web browser!

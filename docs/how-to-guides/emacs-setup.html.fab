@@ -15,6 +15,6 @@ I welcome those knowledgeable enough about other editors to add support for Fabr
 The easiest way to set things up is via ✳=[:a {:href "https://jwiegley.github.io/use-package/"} "use-package"]🔚. Here's how it works:
 
 ✳=[:pre [:code
-       (read/include-source "resources/fabricate-polymode.el")]]🔚
+       (slurp "https://raw.githubusercontent.com/fabricate-site/fabricate/refs/heads/main/resources/fabricate-polymode.el" )]]🔚
 
 Adding this to your config will give you the mode ✳=[:code "poly-fabricate-mode"]🔚, which uses ✳=[:code "fundamental-mode"]🔚 for basic text and ✳=[:code "clojure-mode"]🔚 for Fabricate expressions. Fully compatible with Cider + REPL use; Fabricate exists in large part because I wanted a static website generator as responsive as my REPL. Now I have it, and you do too.

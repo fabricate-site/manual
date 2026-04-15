@@ -1,0 +1,112 @@
+/* type, grid, and spacing scales from utopia.fyi */
+
+/* type scale */
+/* @link https://utopia.fyi/type/calculator?c=320,15,1.2,1584,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6|6,s-l&g=s,l,xl,12 */
+
+:root {
+  /* Step -2: 10.4167px → 15.36px */
+  --step--2: clamp(0.651rem, 0.5728rem + 0.3911vw, 0.96rem);
+  /* Step -1: 12.5px → 19.2px */
+  --step--1: clamp(0.7813rem, 0.6752rem + 0.5301vw, 1.2rem);
+  /* Step 0: 15px → 24px */
+  --step-0: clamp(0.9375rem, 0.7951rem + 0.712vw, 1.5rem);
+  /* Step 1: 18px → 30px */
+  --step-1: clamp(1.125rem, 0.9351rem + 0.9494vw, 1.875rem);
+  /* Step 2: 21.6px → 37.5px */
+  --step-2: clamp(1.35rem, 1.0984rem + 1.2579vw, 2.3438rem);
+  /* Step 3: 25.92px → 46.875px */
+  --step-3: clamp(1.62rem, 1.2884rem + 1.6578vw, 2.9297rem);
+  /* Step 4: 31.104px → 58.5938px */
+  --step-4: clamp(1.944rem, 1.509rem + 2.1748vw, 3.6621rem);
+  /* Step 5: 37.3248px → 73.2422px */
+  --step-5: clamp(2.3328rem, 1.7645rem + 2.8416vw, 4.5776rem);
+
+
+/* space scale */
+/* @link https://utopia.fyi/space/calculator?c=320,15,1.2,1584,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6|7.2,s-l|xs-m&g=2xs,l,3xl,8 */
+
+  /* Space 3xs: 4px → 6px */
+  --space-3xs: clamp(0.25rem, 0.2184rem + 0.1582vw, 0.375rem);
+  /* Space 2xs: 8px → 12px */
+  --space-2xs: clamp(0.5rem, 0.4367rem + 0.3165vw, 0.75rem);
+  /* Space xs: 11px → 18px */
+  --space-xs: clamp(0.6875rem, 0.5767rem + 0.5538vw, 1.125rem);
+  /* Space s: 15px → 24px */
+  --space-s: clamp(0.9375rem, 0.7951rem + 0.712vw, 1.5rem);
+  /* Space m: 23px → 36px */
+  --space-m: clamp(1.4375rem, 1.2318rem + 1.0285vw, 2.25rem);
+  /* Space l: 30px → 48px */
+  --space-l: clamp(1.875rem, 1.5902rem + 1.4241vw, 3rem);
+  /* Space xl: 45px → 72px */
+  --space-xl: clamp(2.8125rem, 2.3853rem + 2.1361vw, 4.5rem);
+  /* Space 2xl: 60px → 96px */
+  --space-2xl: clamp(3.75rem, 3.1804rem + 2.8481vw, 6rem);
+  /* Space 3xl: 90px → 144px */
+  --space-3xl: clamp(5.625rem, 4.7706rem + 4.2722vw, 9rem);
+  /* Space 4xl: 108px → 173px */
+  --space-4xl: clamp(6.75rem, 5.7215rem + 5.1424vw, 10.8125rem);
+
+  /* One-up pairs */
+  /* Space 3xs-2xs: 4px → 12px */
+  --space-3xs-2xs: clamp(0.25rem, 0.1234rem + 0.6329vw, 0.75rem);
+  /* Space 2xs-xs: 8px → 18px */
+  --space-2xs-xs: clamp(0.5rem, 0.3418rem + 0.7911vw, 1.125rem);
+  /* Space xs-s: 11px → 24px */
+  --space-xs-s: clamp(0.6875rem, 0.4818rem + 1.0285vw, 1.5rem);
+  /* Space s-m: 15px → 36px */
+  --space-s-m: clamp(0.9375rem, 0.6052rem + 1.6614vw, 2.25rem);
+  /* Space m-l: 23px → 48px */
+  --space-m-l: clamp(1.4375rem, 1.0419rem + 1.9778vw, 3rem);
+  /* Space l-xl: 30px → 72px */
+  --space-l-xl: clamp(1.875rem, 1.2104rem + 3.3228vw, 4.5rem);
+  /* Space xl-2xl: 45px → 96px */
+  --space-xl-2xl: clamp(2.8125rem, 2.0055rem + 4.0348vw, 6rem);
+  /* Space 2xl-3xl: 60px → 144px */
+  --space-2xl-3xl: clamp(3.75rem, 2.4209rem + 6.6456vw, 9rem);
+  /* Space 3xl-4xl: 90px → 173px */
+  --space-3xl-4xl: clamp(5.625rem, 4.3117rem + 6.5665vw, 10.8125rem);
+
+  /* Custom pairs */
+  /* Space s-l: 15px → 48px */
+  --space-s-l: clamp(0.9375rem, 0.4153rem + 2.6108vw, 3rem);
+  /* Space xs-m: 11px → 36px */
+  --space-xs-m: clamp(0.6875rem, 0.2919rem + 1.9778vw, 2.25rem);
+
+  --grid-gutter: var(--space-2xs-xs);
+
+}
+
+/* column notes */
+
+/* 2xs gutter + 4 columns @ 320px viewport =
+  min col size of 70px */
+
+.u-grid-flex {
+    /* https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
+    max-width: 1584px;
+    display: grid;
+    --grid-item-min-width: var(--space-2xl);
+    --max-column-count: 8;
+    --gap-count: calc(var(--max-column-count) - 1);
+    --total-gap-width: calc(var(--gap-count) * var(--grid-gutter));
+    --grid-item-max-width: calc((100% - var(--total-gap-width)) / var(--max-column-count));
+    --grid-column-width: max(var(--grid-item-min-width), var(--grid-item-max-width));
+
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-column-width), 1fr));
+    grid-column-gap: var(--grid-gutter);
+
+}
+
+/* default of lobotomized owl */
+.u-grid-flex > * + * {
+    grid-column: span 4;
+}
+
+.u-grid-flex > :where(h1,h2,h3,h4,h5,h6) {
+    grid-column: 1 / -1;
+}
+
+/* anything after a header starts a new row */
+.u-grid-flex > :where(h1,h2,h3,h4,h5,h6) + * {
+    grid-column: 1 / span 4;
+}

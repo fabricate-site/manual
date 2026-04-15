@@ -4,7 +4,9 @@
             [cybermonday.utils :as cm-utils]
             [cybermonday.parser :as md-parser]
             [cybermonday.core :as md]
-            [cybermonday.lowering :as md-lower])
+            [cybermonday.lowering :as md-lower]
+            [clojure.string :as str]
+            [clojure.edn :as edn])
   (:import [com.vladsch.flexmark.parser Parser]
            [com.vladsch.flexmark.util.data MutableDataSet]
            [com.vladsch.flexmark.ext.tables TablesExtension TableBlock TableHead
@@ -61,11 +63,27 @@
   [ast source]
   (md-ir/process-inline-html (md-parser/to-hiccup ast source)))
 
+(def ^:private front-matter-fence
+  (str "---" (System/getProperty "line.separator")))
+
+(defn get-front-matter
+  "Extract and return the EDN front matter along with the remaining text, if present."
+  [md-text]
+  (if (str/starts-with? md-text front-matter-fence)
+    (let [interval (count front-matter-fence)
+          idx      (str/index-of md-text front-matter-fence interval)]
+      {:md/text         (subs md-text (+ idx interval))
+       :md/front-matter (edn/read-string (subs md-text interval idx))})
+    {:md/text md-text :md/front-matter nil}))
+
 (defn md->hiccup
   ([md-text opts]
-   (-> (ast->hiccup (flexmark-parse md-text) md-text)
-       (md-lower/to-html-hiccup opts)
-       (cm-utils/cleanup)))
+   (let [{:keys [md/text] :as data} (get-front-matter md-text)]
+     (assoc data
+            :hiccup
+            (-> (ast->hiccup (flexmark-parse text) text)
+                (md-lower/to-html-hiccup opts)
+                (cm-utils/cleanup)))))
   ([md-text] (md->hiccup md-text {})))
 
 (comment
